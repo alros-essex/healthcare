@@ -1,5 +1,5 @@
-from doctor import Doctor
-from patient import Patient
+from .doctor import Doctor
+from .patient import Patient
 
 class Prescription():
     """

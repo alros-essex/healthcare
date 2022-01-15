@@ -1,5 +1,5 @@
-from healthcare_processional import HealthcareProfessional
-from patient import Patient
+from .healthcare_professional import HealthcareProfessional
+from .patient import Patient
 
 class Appointment():
     """

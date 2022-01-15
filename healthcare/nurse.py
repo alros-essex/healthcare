@@ -1,4 +1,4 @@
-from healthcare_processional import HealthcareProfessional
+from .healthcare_professional import HealthcareProfessional
 
 class Nurse(HealthcareProfessional):
     """

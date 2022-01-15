@@ -6,7 +6,8 @@ setup(
     packages=find_packages(include=['healthcare']),
     test_suite = 'test',
     install_requires=[
-        "colorama >= 0.4.0"
+        "colorama >= 0.4.0",
+        "tqdm >= 0.0.1"
     ],
     python_requires='>=3.6'
 )

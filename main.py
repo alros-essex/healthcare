@@ -1,4 +1,4 @@
-from healthcare.healthcare import main
+from healthcare.initializer import main
 
 # a convenient main to call the application
 

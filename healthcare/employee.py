@@ -1,6 +1,6 @@
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod, ABC
 
-class HealthcareProfessional(metaclass=ABCMeta):
+class Employee(ABC):
     """
     Base class for healthcare professionals
     """
@@ -23,14 +23,3 @@ class HealthcareProfessional(metaclass=ABCMeta):
     @property
     def employee_number(self):
         return self._employee_number
-
-    @abstractmethod
-    def consultation(self):
-        """Conducts a consultation
-        
-        Args:
-            None
-        Returns:
-            Array of String: results of the consultation
-        """
-        pass
