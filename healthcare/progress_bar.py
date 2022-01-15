@@ -6,7 +6,7 @@ from healthcare.event_listener import EventListener
 
 class ProgressBar(EventListener):
 
-    _PAUSE = 0.5
+    _PAUSE = 0.3
 
     def __init__(self, steps:int, init_message:str, row:int, padding:int=50):
         self._bar = tqdm(range(0, steps), position=row)
