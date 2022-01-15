@@ -1,12 +1,22 @@
 from colorama import Fore, Back, Style
-from .progress_bar import ProgressBar
+from .clinic import Clinic
+from .state import State
+from .state_connected_handler import StateConnectedHandler
 
 LOG = '@log'
 
 class Console():
 
-    def create_progress_bar(self, steps:int, init_message:str, padding:int=50):
-        return ProgressBar(steps, init_message, padding)
+    def __init__(self):
+        self._clinic = Clinic()
+        self._state = State.CONNECTED
+        self._handlers = {}
+        self._handlers[State.CONNECTED] = StateConnectedHandler()
+
+    def loop(self):
+        while True:
+            self._handlers[self._state].handle(self._clinic)
+  
 
     def print_formatted(self, output):
         """

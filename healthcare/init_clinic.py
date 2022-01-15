@@ -1,4 +1,4 @@
-from .healthcare import Healthcare
+from .clinic import Healthcare
 from .init_task import InitTask
 
 class InitClinic(InitTask):
