@@ -29,4 +29,4 @@ class StateConnectedHandler(StateHandler):
         ConsoleUtility.print_option('Manage [R]eceptionists')
         
     def _get_user_choice(self):
-        return ConsoleUtility.get_option(['D','N','R'])
+        return ConsoleUtility.prompt_user_for_input(['D','N','R'])

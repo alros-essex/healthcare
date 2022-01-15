@@ -23,3 +23,6 @@ class Employee(ABC):
     @property
     def employee_number(self):
         return self._employee_number
+
+    def __str__(self):
+        return '{}: {}'.format(self.employee_number, self.name)

@@ -2,6 +2,9 @@ from colorama import Fore, Back, Style
 from .clinic import Clinic
 from .state import State
 from .state_connected_handler import StateConnectedHandler
+from .state_hire_a_doctor import StateHireDoctor
+from .state_manage_doctors import StateManageDoctors
+
 
 LOG = '@log'
 
@@ -12,10 +15,12 @@ class Console():
         self._state = State.CONNECTED
         self._handlers = {}
         self._handlers[State.CONNECTED] = StateConnectedHandler()
+        self._handlers[State.MANAGE_DOCTORS] = StateManageDoctors()
+        self._handlers[State.HIRE_A_DOCTOR] = StateHireDoctor()
 
     def loop(self):
         while True:
-            self._handlers[self._state].handle(self._clinic)
+            self._state = self._handlers[self._state].handle(self._clinic)
   
 
     def print_formatted(self, output):

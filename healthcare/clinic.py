@@ -10,9 +10,13 @@ class Clinic():
     
     def hire(self, professional:HealthcareProfessional):
         self._staff.append(professional)
+        # TODO add validation
+        return True, None
 
     def hire(self, receptionist: Receptionist):
         self._staff.append(receptionist)
+        # TODO add validation
+        return True, None
 
     @property
     def doctors(self):

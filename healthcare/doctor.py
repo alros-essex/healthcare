@@ -20,3 +20,4 @@ class Doctor(HealthcareProfessional):
 
     def issue_prescription(self):
         pass
+
