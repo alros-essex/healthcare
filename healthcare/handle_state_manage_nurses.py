@@ -1,7 +1,7 @@
 from .clinic import Clinic
 from .nurse import Nurse
 from .state import State
-from .state_manage_staff import StateManageStaff
+from .handle_state_manage_staff import StateManageStaff
 
 class StateManageNurses(StateManageStaff):
 

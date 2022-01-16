@@ -1,6 +1,6 @@
 from .nurse import Nurse
 from .state import State
-from .state_fire_staff import StateFireStaff
+from .handle_state_fire_staff import StateFireStaff
 
 class StateFireNurse(StateFireStaff):
 

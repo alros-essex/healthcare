@@ -2,7 +2,7 @@ from healthcare import receptionist
 from .clinic import Clinic
 from .console_utility import ConsoleUtility
 from .state import State
-from .state_handler import StateHandler
+from .handle_state import StateHandler
 
 class StateConnectedHandler(StateHandler):
     

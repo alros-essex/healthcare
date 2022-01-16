@@ -2,19 +2,20 @@ from colorama import Fore, Back, Style
 
 from .clinic import Clinic
 from .state import State
-from .state_connected_handler import StateConnectedHandler
-from .state_hire_a_doctor import StateHireDoctor
-from .state_fire_a_doctor import StateFireDoctor
-from .state_manage_doctors import StateManageDoctors
-from .state_manage_employee import StateManageEmployee
-from .state_manage_patients import StateManagePatients
-from .state_manage_staff import StateManageStaff
-from .state_hire_a_nurse import StateHireNurse
-from .state_fire_a_nurse import StateFireNurse
-from .state_manage_nurses import StateManageNurses
-from .state_hire_a_receptionist import StateHireReceptionist
-from .state_fire_a_receptionist import StateFireReceptionist
-from .state_manage_receptionists import StateManageReceptionists
+from .handle_state_as_patient import StateAsPatientHandler
+from .handle_state_connected import StateConnectedHandler
+from .handle_state_hire_a_doctor import StateHireDoctor
+from .handle_state_fire_a_doctor import StateFireDoctor
+from .handle_state_manage_doctors import StateManageDoctors
+from .handle_state_manage_employee import StateManageEmployee
+from .handle_state_manage_patients import StateManagePatients
+from .handle_state_manage_staff import StateManageStaff
+from .handle_state_hire_a_nurse import StateHireNurse
+from .handle_state_fire_a_nurse import StateFireNurse
+from .handle_state_manage_nurses import StateManageNurses
+from .handle_state_hire_a_receptionist import StateHireReceptionist
+from .handle_state_fire_a_receptionist import StateFireReceptionist
+from .handle_state_manage_receptionists import StateManageReceptionists
 
 
 LOG = '@log'
@@ -35,6 +36,7 @@ class Console():
         self._handlers[State.HIRE_A_RECEPTIONIST] = StateHireReceptionist()
         self._handlers[State.FIRE_A_RECEPTIONIST] = StateFireReceptionist()
         self._handlers[State.MANAGE_PATIENTS] = StateManagePatients()
+        self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler()
 
     def loop(self, clinic:Clinic):
         self._state = State.CONNECTED
