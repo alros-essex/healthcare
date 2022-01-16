@@ -18,10 +18,14 @@ class StateManagePatients(StateHandler):
     def _print_status(self, clinic:Clinic):
         ConsoleUtility.print_light('PATIENTS')
         columns = 3
+        page = 15 * columns
         for index, patient in enumerate(clinic.patients, 1):
             print(patient.name.ljust(30), end='')
             if index % columns == 0:
                 print()
+            if index % page ==0 and index >- page:
+                ConsoleUtility.print_option('[ENTER] for more')
+                ConsoleUtility.prompt_user_for_input()
         if len(clinic.patients) % columns != 0:
             print('\n')
 
