@@ -1,28 +1,30 @@
 from abc import abstractmethod, ABC
 from .progress_bar import ProgressBar
-from .clinic import Healthcare
+from .clinic import Clinic
 from .init_clinic import InitClinic
 from .init_doctors import InitDoctors
 from .init_nurses import InitNurses
 from .init_receptionists import InitReceptionists
 
-def main():
-    """Entry point: call this method to start the application"""
+class Initializer():
 
-    healthcare = Healthcare()
+    def init(self, clinic:Clinic, quick:bool=False):
+        init_steps = [
+            InitClinic(),
+            InitDoctors(),
+            InitNurses(),
+            InitReceptionists()
+        ]
+        pause_time = 0.01 if quick else 0.3
+        for index, init_step in enumerate(init_steps):
+            init_step.add_event_listener(ProgressBar(
+                steps = init_step.sub_steps_count, 
+                init_message = init_step.description, 
+                row = index, 
+                pause_time = pause_time))
 
-    init_steps = [
-        InitClinic(),
-        InitDoctors(),
-        InitNurses(),
-        InitReceptionists()
-    ]
-        
-    for index, init_step in enumerate(init_steps):
-        init_step.add_event_listener(ProgressBar(init_step.sub_steps_count, init_step.description, index))
-
-    for init_step in init_steps:
-        init_step.init(healthcare)
+        for init_step in init_steps:
+            init_step.init(clinic)
 
     
 

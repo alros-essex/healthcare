@@ -11,16 +11,15 @@ LOG = '@log'
 class Console():
 
     def __init__(self):
-        self._clinic = Clinic()
-        self._state = State.CONNECTED
         self._handlers = {}
         self._handlers[State.CONNECTED] = StateConnectedHandler()
         self._handlers[State.MANAGE_DOCTORS] = StateManageDoctors()
         self._handlers[State.HIRE_A_DOCTOR] = StateHireDoctor()
 
-    def loop(self):
+    def loop(self, clinic:Clinic):
+        self._state = State.CONNECTED
         while True:
-            self._state = self._handlers[self._state].handle(self._clinic)
+            self._state = self._handlers[self._state].handle(clinic)
   
 
     def print_formatted(self, output):
@@ -53,5 +52,3 @@ class Console():
             '[INFO] {color_fg}{color_bg}{line}{reset_bg}{reset_fg}'.format(line = line[len(LOG):],
                 color_fg = Fore.GREEN, color_bg = Back.BLACK, reset_bg = Back.RESET, reset_fg = Fore.RESET)
         print(line)
-
-CONSOLE = Console()

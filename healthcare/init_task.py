@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .clinic import Healthcare
+from .clinic import Clinic
 from .event import Event
 from .event_listener import EventListener
 
@@ -9,7 +9,7 @@ class InitTask(ABC):
         self._description = description
 
     @abstractmethod
-    def init(self, healthcare:Healthcare):
+    def init(self, healthcare:Clinic):
         """Initialize the headthcare and update the progress bar
 
         Args:

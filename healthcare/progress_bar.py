@@ -6,19 +6,18 @@ from healthcare.event_listener import EventListener
 
 class ProgressBar(EventListener):
 
-    _PAUSE = 0.3
-
-    def __init__(self, steps:int, init_message:str, row:int, padding:int=50):
+    def __init__(self, steps:int, init_message:str, row:int, padding:int=50, pause_time:float=0.3):
         self._bar = tqdm(range(0, steps), position=row)
         self._init_message = init_message
         self._padding = padding
+        self._pause_time = pause_time
         self._update_description(init_message)
 
     def notify(self, event:Event):
         self._tick(event.description)
     
     def _tick(self, message:str):
-        time.sleep(ProgressBar._PAUSE)
+        time.sleep(self._pause_time)
         self._bar.update()
         self._update_description(message)
 
