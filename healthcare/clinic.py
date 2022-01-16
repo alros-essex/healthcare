@@ -1,4 +1,4 @@
-from .healthcare_professional import HealthcareProfessional
+from .employee import Employee
 from .doctor import Doctor
 from .nurse import Nurse
 from .receptionist import Receptionist
@@ -8,15 +8,20 @@ class Clinic():
     def __init__(self):
         self._staff = []
     
-    def hire(self, professional:HealthcareProfessional):
-        self._staff.append(professional)
+    def hire(self, employee:Employee):
+        self._staff.append(employee)
         # TODO add validation
         return True, None
 
-    def hire(self, receptionist: Receptionist):
-        self._staff.append(receptionist)
-        # TODO add validation
-        return True, None
+    def fire(self, employee_number:str, type):
+        employee = next(filter(lambda e: e.employee_number == employee_number, self._staff), None)
+        if employee is None:
+            return False, 'Employee number {} not found'.format(employee_number)
+        elif not isinstance(employee, type):
+            return False, 'Employee number {} is not a {}'.format(employee_number, type.__name__)
+        else:
+            self._staff.remove(employee)
+            return True, None
 
     @property
     def doctors(self):

@@ -6,8 +6,8 @@ from .state_handler import StateHandler
 
 class StateManageStaff(StateHandler, ABC):
     
-    def __init__(self, type:str, state_hire:State, state_fire:State):
-        self._type = type
+    def __init__(self, managed_type, state_hire:State, state_fire:State):
+        self._type = managed_type.__name__
         self._next_state = {}
         self._next_state['H'] = state_hire
         self._next_state['F'] = state_fire
@@ -19,7 +19,7 @@ class StateManageStaff(StateHandler, ABC):
         return self._next_state[self._get_user_choice()]
 
     def _print_status(self, clinic:Clinic):
-        ConsoleUtility.print_light(self._type.upper())
+        ConsoleUtility.print_light('{} MENU'.format(self._type.upper()))
         for staff in self._get_managed_staff(clinic):
             ConsoleUtility.print_light('- {}'.format(staff))
 
@@ -29,7 +29,7 @@ class StateManageStaff(StateHandler, ABC):
         ConsoleUtility.print_option('[B]ack')
 
     def _get_user_choice(self):
-        return ConsoleUtility.prompt_user_for_input(['H','F'])
+        return ConsoleUtility.prompt_user_for_input(['H', 'F', 'B'])
 
     @abstractmethod
     def _get_managed_staff(self):

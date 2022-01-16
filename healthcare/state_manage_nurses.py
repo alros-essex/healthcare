@@ -1,12 +1,12 @@
 from .clinic import Clinic
-from .doctor import Doctor
+from .nurse import Nurse
 from .state import State
 from .state_manage_staff import StateManageStaff
 
-class StateManageDoctors(StateManageStaff):
+class StateManageNurses(StateManageStaff):
 
     def __init__(self):
-        super().__init__(Doctor, State.HIRE_A_DOCTOR, State.FIRE_A_DOCTOR)
+        super().__init__(Nurse, State.HIRE_A_NURSE, State.FIRE_A_NURSE)
 
     def _get_managed_staff(self, clinic:Clinic):
-        return clinic.doctors
+        return clinic.nurses

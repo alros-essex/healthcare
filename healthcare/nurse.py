@@ -17,3 +17,4 @@ class Nurse(HealthcareProfessional):
 
     def consultation(self):
         pass
+    
