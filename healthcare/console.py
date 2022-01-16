@@ -3,6 +3,7 @@ from colorama import Fore, Back, Style
 from .clinic import Clinic
 from .state import State
 from .handle_state_as_patient import StateAsPatientHandler
+from .handle_state_as_patient_call import StateAsPatientCallHandler
 from .handle_state_connected import StateConnectedHandler
 from .handle_state_hire_a_doctor import StateHireDoctor
 from .handle_state_fire_a_doctor import StateFireDoctor
@@ -37,6 +38,7 @@ class Console():
         self._handlers[State.FIRE_A_RECEPTIONIST] = StateFireReceptionist()
         self._handlers[State.MANAGE_PATIENTS] = StateManagePatients()
         self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler()
+        self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler()
 
     def loop(self, clinic:Clinic):
         self._state = State.CONNECTED

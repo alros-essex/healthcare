@@ -13,7 +13,7 @@ class Patient():
         Returns:
             None
         """
-        self._name = str.join(', ', [surname, name])
+        self._name = ', '.join([surname, name])
         self._address = address
         self._phone = phone
 
@@ -28,7 +28,6 @@ class Patient():
     @property
     def phone(self):
         return self._phone
-
 
     def __lt__(self, other):
         return self.name < other.name

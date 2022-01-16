@@ -1,14 +1,22 @@
+import random
+from types import resolve_bases
+
+from .appointment import Appointment
+from .appointment_schedule import AppointmentSchedule
 from .employee import Employee
 from .doctor import Doctor
 from .nurse import Nurse
 from .patient import Patient
 from .receptionist import Receptionist
+from healthcare import receptionist
 
 class Clinic():
 
     def __init__(self):
         self._staff = []
         self._patients = []
+        self._appointment_schedule = AppointmentSchedule()
+        self._name = 'Golden Oak Clinic'
     
     def hire(self, employee:Employee):
         self._staff.append(employee)
@@ -28,6 +36,14 @@ class Clinic():
     def register_patient(self, patient:Patient):
         self._patients.append(patient)
 
+    def call(self) -> Receptionist:
+        receptionists = self.receptionists
+        tot = len(receptionists)
+        if tot == 0:
+            return None
+        else:
+            return receptionists[random.randint(0, tot - 1)]
+
     @property
     def doctors(self):
         return self._get_by_type(Doctor)
@@ -43,6 +59,14 @@ class Clinic():
     @property
     def patients(self):
         return sorted(self._patients)
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def appointment_schedule(self):
+        return self._appointment_schedule
 
     def _get_by_type(self, type):
         return list(filter(lambda staff: isinstance(staff,type), self._staff))

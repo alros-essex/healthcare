@@ -1,3 +1,4 @@
+from .clinic import Clinic
 from .doctor import Doctor
 from .init_hiring_staff import InitHiringStaff
 
