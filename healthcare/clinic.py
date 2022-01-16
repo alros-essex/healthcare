@@ -1,12 +1,14 @@
 from .employee import Employee
 from .doctor import Doctor
 from .nurse import Nurse
+from .patient import Patient
 from .receptionist import Receptionist
 
 class Clinic():
 
     def __init__(self):
         self._staff = []
+        self._patients = []
     
     def hire(self, employee:Employee):
         self._staff.append(employee)
@@ -23,6 +25,9 @@ class Clinic():
             self._staff.remove(employee)
             return True, None
 
+    def register_patient(self, patient:Patient):
+        self._patients.append(patient)
+
     @property
     def doctors(self):
         return self._get_by_type(Doctor)
@@ -34,6 +39,10 @@ class Clinic():
     @property
     def receptionists(self):
         return self._get_by_type(Receptionist)
+
+    @property
+    def patients(self):
+        return sorted(self._patients)
 
     def _get_by_type(self, type):
         return list(filter(lambda staff: isinstance(staff,type), self._staff))

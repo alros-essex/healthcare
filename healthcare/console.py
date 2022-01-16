@@ -1,10 +1,14 @@
 from colorama import Fore, Back, Style
+
 from .clinic import Clinic
 from .state import State
 from .state_connected_handler import StateConnectedHandler
 from .state_hire_a_doctor import StateHireDoctor
 from .state_fire_a_doctor import StateFireDoctor
 from .state_manage_doctors import StateManageDoctors
+from .state_manage_employee import StateManageEmployee
+from .state_manage_patients import StateManagePatients
+from .state_manage_staff import StateManageStaff
 from .state_hire_a_nurse import StateHireNurse
 from .state_fire_a_nurse import StateFireNurse
 from .state_manage_nurses import StateManageNurses
@@ -20,6 +24,7 @@ class Console():
     def __init__(self):
         self._handlers = {}
         self._handlers[State.CONNECTED] = StateConnectedHandler()
+        self._handlers[State.MANAGE_EMPLOYEES] = StateManageEmployee()
         self._handlers[State.MANAGE_DOCTORS] = StateManageDoctors()
         self._handlers[State.HIRE_A_DOCTOR] = StateHireDoctor()
         self._handlers[State.FIRE_A_DOCTOR] = StateFireDoctor()
@@ -29,10 +34,11 @@ class Console():
         self._handlers[State.MANAGE_RECEPTIONISTS] = StateManageReceptionists()
         self._handlers[State.HIRE_A_RECEPTIONIST] = StateHireReceptionist()
         self._handlers[State.FIRE_A_RECEPTIONIST] = StateFireReceptionist()
+        self._handlers[State.MANAGE_PATIENTS] = StateManagePatients()
 
     def loop(self, clinic:Clinic):
         self._state = State.CONNECTED
-        while True:
+        while self._state != State.QUIT:
             self._state = self._handlers[self._state].handle(clinic)
   
 

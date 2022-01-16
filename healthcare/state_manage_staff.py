@@ -11,7 +11,7 @@ class StateManageStaff(StateHandler, ABC):
         self._next_state = {}
         self._next_state['H'] = state_hire
         self._next_state['F'] = state_fire
-        self._next_state['B']=State.CONNECTED
+        self._next_state['B']=State.MANAGE_EMPLOYEES
 
     def handle(self, clinic:Clinic):
         self._print_status(clinic)

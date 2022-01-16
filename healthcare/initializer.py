@@ -4,6 +4,7 @@ from .clinic import Clinic
 from .init_clinic import InitClinic
 from .init_doctors import InitDoctors
 from .init_nurses import InitNurses
+from .init_patients import InitPatients
 from .init_receptionists import InitReceptionists
 
 class Initializer():
@@ -13,7 +14,8 @@ class Initializer():
             InitClinic(),
             InitDoctors(),
             InitNurses(),
-            InitReceptionists()
+            InitReceptionists(),
+            InitPatients()
         ]
         pause_time = 0.01 if quick else 0.3
         for index, init_step in enumerate(init_steps):
