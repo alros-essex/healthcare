@@ -17,7 +17,7 @@ from .handle_state_manage_nurses import StateManageNurses
 from .handle_state_hire_a_receptionist import StateHireReceptionist
 from .handle_state_fire_a_receptionist import StateFireReceptionist
 from .handle_state_manage_receptionists import StateManageReceptionists
-
+from .handle_state_view_appointments import StateViewAppointmentsHandler
 
 LOG = '@log'
 
@@ -39,6 +39,7 @@ class Console():
         self._handlers[State.MANAGE_PATIENTS] = StateManagePatients()
         self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler()
         self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler()
+        self._handlers[State.VIEW_APPOINTMENTS] = StateViewAppointmentsHandler()
 
     def loop(self, clinic:Clinic):
         self._state = State.CONNECTED

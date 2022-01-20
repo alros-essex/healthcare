@@ -83,12 +83,12 @@ class StateAsPatientCallHandler(StateHandler):
         accepted = False
         next_timeslot = datetime.now()
         while not accepted:
-            next_timeslot = receptionist.find_next_free_timeslot(clinic.appointment_schedule, doctor, urgent, next_timeslot)
+            next_timeslot = receptionist.find_next_free_timeslot(clinic.appointment_schedule, staff, urgent, next_timeslot)
             ConsoleUtility.print_conversation('{} would be ok for you?'.format(next_timeslot))
             ConsoleUtility.print_option('[Y]es')
             ConsoleUtility.print_option('[N]o')
             accepted = ConsoleUtility.prompt_user_for_input(['Y', 'N']) == 'Y'
-        receptionist.make_appointment(staff, clinic.appointment_schedule, patient, next_timeslot, urgent)
+        receptionist.make_appointment(clinic.appointment_schedule, staff, patient, next_timeslot, urgent)
         ConsoleUtility.print_conversation('Thank you, the appointment has been registered')
 
     def _cancel_an_appointment(self, receptionist:Receptionist):

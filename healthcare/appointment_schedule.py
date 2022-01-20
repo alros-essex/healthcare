@@ -1,7 +1,7 @@
 from collections import defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 
-from healthcare import appointment
+from .appointment import Appointment
 from .healthcare_professional import HealthcareProfessional
 
 
@@ -23,15 +23,15 @@ class AppointmentSchedule():
     def appointments(self):
         return self._appoitments
 
-    def add_appoitment(self):
+    def add_appoitment(self, appointment:Appointment):
         """creates an appoitment
         
         Args:
             None
         Returns:
-            Appointment: appointment just created
+            None
         """
-        pass
+        self._appoitments[appointment.staff.employee_number][appointment.date]=appointment
 
     def cancel_appoitment(self):
         """deletes an appoitment
@@ -44,7 +44,10 @@ class AppointmentSchedule():
         pass
 
     def find_next_available(self, professional:HealthcareProfessional, urgent:bool, initial:datetime):
-        starting = datetime(initial.year, initial.month, initial.day, initial.hour + (0 if initial.minute<30 else 1), 30 if initial.minute<30 else 0)
+        if initial.minute != 0 and initial.minute != 30:
+            starting = datetime(initial.year, initial.month, initial.day, initial.hour + (0 if initial.minute<=30 else 1), 0 if initial.minute<=30 else 30)
+        else:
+            starting = initial
         appointments = self._get_appointments(professional)
         time_slot = self._next_slot(urgent, starting)
         empty_slot = None
@@ -66,21 +69,29 @@ class AppointmentSchedule():
         """
         pass
 
+    def get_by_date(self, date:date):
+        all_appointments = []
+        professionals = self.appoitments.keys()
+        for professional in professionals:
+            appointments = self.appointments[professional.employee_number]
+            all_appointments.append([appointment for appointment in appointments if appointment.is_on(date)])
+        return sorted(all_appointments, key=date)
+
     def _get_appointments(self, professional:HealthcareProfessional):
         return self._appoitments[professional.employee_number]
 
     def _next_slot(self, urgent:bool, starting:datetime):
-        slot = starting
-        if not self._it_it_open(starting, urgent):
+        slot = starting + timedelta(minutes=30)
+        if not self._is_it_open(starting, urgent):
             slot = self._urgent_next_opening_time(slot) if urgent else self._non_urgent_next_opening_time(slot)
         return slot
 
     # TODO manage weekends
 
-    def _it_it_open(self, time:datetime, urgent:bool):
+    def _is_it_open(self, time:datetime, urgent:bool):
         opening = datetime(time.year, time.month, time.day, 8 if urgent else 9)
         closing = datetime(time.year, time.month, time.day, 14 if urgent else 13)
-        return opening > time and time > closing
+        return closing >= time and time >= opening
 
     def _non_urgent_next_opening_time(self, starting:datetime):
         opening = starting.replace(hour=9, minute=0, second=0, microsecond=0)

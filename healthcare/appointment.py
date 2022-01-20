@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, date
 from .healthcare_professional import HealthcareProfessional
 from .patient import Patient
+from healthcare import patient
 
 class Appointment():
     """
@@ -37,6 +38,9 @@ class Appointment():
     def date(self):
         return self._date
 
+    def is_on(self, date):
+        return self.date.year == date.year and self.date.month == date.month and self.date.day == date.day
+
     def __lt__(self, other):
         return self.date < other.date
     
@@ -54,3 +58,7 @@ class Appointment():
     
     def __ge__(self, other):
         return self.date >= other.date
+
+    def __str__(self) -> str:
+        return "{staff} with {patient} - {date} - {type}".format(
+            staff=self.staff,patient=self.patient,date=self.date,type=self.type)

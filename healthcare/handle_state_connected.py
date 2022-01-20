@@ -10,6 +10,7 @@ class StateConnectedHandler(StateHandler):
         self._next_state = {}
         self._next_state['E']=State.MANAGE_EMPLOYEES
         self._next_state['P']=State.MANAGE_PATIENTS
+        self._next_state['A']=State.VIEW_APPOINTMENTS
         self._next_state['I']=State.AS_A_PATIENT
         self._next_state['Q']=State.QUIT
 
@@ -28,8 +29,9 @@ class StateConnectedHandler(StateHandler):
     def _print_options(self):
         ConsoleUtility.print_option('Manage [E]employees')
         ConsoleUtility.print_option('Manage [P]atients')
+        ConsoleUtility.print_option('View [A]ppointments')
         ConsoleUtility.print_option('[I]nteract as a patient')
-        ConsoleUtility.print_option('Manage [Q]quit')
+        ConsoleUtility.print_option('[Q]quit')
         
     def _get_user_choice(self):
         return ConsoleUtility.prompt_user_for_input(['E', 'P', 'I', 'Q'])
