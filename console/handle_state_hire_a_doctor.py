@@ -1,5 +1,5 @@
 from healthcare.doctor import Doctor
-from healthcare.state import State
+from console.state import State
 
 from .handle_state_hire_staff import StateHireStaff
 

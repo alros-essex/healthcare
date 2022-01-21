@@ -2,7 +2,7 @@ import argparse
 import sys
 from healthcare.clinic import Clinic
 from console.console import Console
-from healthcare.initializer import Initializer
+from initializer.initializer import Initializer
 
 # a convenient main to call the application
 

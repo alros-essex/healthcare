@@ -1,5 +1,6 @@
+from healthcare.nurse import Nurse
+
 from .init_hiring_staff import InitHiringStaff
-from .nurse import Nurse
 
 class InitNurses(InitHiringStaff):
     def _get_type_of_staff(self):

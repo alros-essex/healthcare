@@ -1,7 +1,9 @@
-from .clinic import Clinic
-from .init_task import InitTask
-from .patient import Patient
 import random
+
+from healthcare.clinic import Clinic
+from healthcare.patient import Patient
+
+from .init_task import InitTask
 
 class InitPatients(InitTask):
     def __init__(self):

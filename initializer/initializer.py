@@ -1,6 +1,6 @@
-from abc import abstractmethod, ABC
-from .progress_bar import ProgressBar
-from .clinic import Clinic
+from console.progress_bar import ProgressBar
+from healthcare.clinic import Clinic
+
 from .init_clinic import InitClinic
 from .init_doctors import InitDoctors
 from .init_nurses import InitNurses

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from healthcare.state import State
+from console.state import State
 from healthcare.clinic import Clinic
 
 from .console_utility import ConsoleUtility

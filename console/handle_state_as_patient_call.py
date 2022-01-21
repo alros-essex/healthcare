@@ -2,7 +2,7 @@ from datetime import datetime
 
 from healthcare.patient import Patient
 from healthcare.clinic import Clinic
-from healthcare.state import State
+from console.state import State
 from healthcare.receptionist import Receptionist
 
 from .console_utility import ConsoleUtility

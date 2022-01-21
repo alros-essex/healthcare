@@ -1,6 +1,6 @@
 from healthcare.clinic import Clinic
 from healthcare.nurse import Nurse
-from healthcare.state import State
+from console.state import State
 
 from .handle_state_manage_staff import StateManageStaff
 

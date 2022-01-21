@@ -1,7 +1,7 @@
 from datetime import datetime
 from healthcare.appointment_schedule import AppointmentSchedule
 from healthcare.clinic import Clinic
-from healthcare.state import State
+from console.state import State
 
 from .console_utility import ConsoleUtility
 from .handle_state import StateHandler

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from .clinic import Clinic
+
+from healthcare.clinic import Clinic
+
 from .init_task import InitTask
 
 class InitHiringStaff(InitTask, ABC):
