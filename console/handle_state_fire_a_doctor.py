@@ -1,5 +1,6 @@
-from .doctor import Doctor
-from .state import State
+from healthcare.doctor import Doctor
+from healthcare.state import State
+
 from .handle_state_fire_staff import StateFireStaff
 
 class StateFireDoctor(StateFireStaff):

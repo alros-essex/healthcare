@@ -1,25 +1,20 @@
 from abc import ABC, abstractmethod
 
 from healthcare.state import State
-from .clinic import Clinic
+from healthcare.clinic import Clinic
+
 from .console_utility import ConsoleUtility
 
-class StateHireStaff(ABC):
+class StateFireStaff(ABC):
     
-    def __init__(self, next_state:State):
+    def __init__(self, next_state:State, type):
         self._next_state = next_state
+        self._type = type
 
     def handle(self, clinic:Clinic):
-        ConsoleUtility.print_option('Please insert name')
-        name = ConsoleUtility.prompt_user_for_input()
         ConsoleUtility.print_option('Please insert employee number')
         employee_number = ConsoleUtility.prompt_user_for_input()
-        employee = self._get_instance(name, employee_number)
-        hired, message = clinic.hire(employee)
-        if not hired:
+        fired, message = clinic.fire(employee_number, self._type)
+        if not fired:
             ConsoleUtility.print_error('There was an error: {}'.format(message))
         return self._next_state
-
-    @abstractmethod
-    def _get_instance(self, name:str, employee_number:str):
-        pass

@@ -1,7 +1,8 @@
 from colorama import Fore, Back, Style
 
-from .clinic import Clinic
-from .state import State
+from healthcare.clinic import Clinic
+from healthcare.state import State
+
 from .handle_state_as_patient import StateAsPatientHandler
 from .handle_state_as_patient_call import StateAsPatientCallHandler
 from .handle_state_connected import StateConnectedHandler

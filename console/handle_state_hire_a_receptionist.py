@@ -1,5 +1,6 @@
-from .receptionist import Receptionist
-from .state import State
+from healthcare.receptionist import Receptionist
+from healthcare.state import State
+
 from .handle_state_hire_staff import StateHireStaff
 
 class StateHireReceptionist(StateHireStaff):

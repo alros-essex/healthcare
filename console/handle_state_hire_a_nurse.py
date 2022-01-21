@@ -1,5 +1,6 @@
-from .nurse import Nurse
-from .state import State
+from healthcare.nurse import Nurse
+from healthcare.state import State
+
 from .handle_state_hire_staff import StateHireStaff
 
 class StateHireNurse(StateHireStaff):

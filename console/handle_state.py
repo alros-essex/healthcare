@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .clinic import Clinic
+from healthcare.clinic import Clinic
 
 class StateHandler(ABC):
 

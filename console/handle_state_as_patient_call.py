@@ -1,13 +1,12 @@
 from datetime import datetime
-from healthcare import appointment
-from healthcare.patient import Patient
 
-from .appointment import Appointment
-from .clinic import Clinic
+from healthcare.patient import Patient
+from healthcare.clinic import Clinic
+from healthcare.state import State
+from healthcare.receptionist import Receptionist
+
 from .console_utility import ConsoleUtility
-from .state import State
 from .handle_state import StateHandler
-from .receptionist import Receptionist
 
 class StateAsPatientCallHandler(StateHandler):
 

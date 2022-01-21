@@ -1,8 +1,9 @@
 from datetime import datetime
-from .appointment_schedule import AppointmentSchedule
-from .clinic import Clinic
+from healthcare.appointment_schedule import AppointmentSchedule
+from healthcare.clinic import Clinic
+from healthcare.state import State
+
 from .console_utility import ConsoleUtility
-from .state import State
 from .handle_state import StateHandler
 
 class StateViewAppointmentsHandler(StateHandler):
