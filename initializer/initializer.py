@@ -1,6 +1,7 @@
 from console.progress_bar import ProgressBar
 from healthcare.clinic import Clinic
 
+from .init_appointments import InitAppointments
 from .init_clinic import InitClinic
 from .init_doctors import InitDoctors
 from .init_nurses import InitNurses
@@ -15,7 +16,8 @@ class Initializer():
             InitDoctors(),
             InitNurses(),
             InitReceptionists(),
-            InitPatients()
+            InitPatients(),
+            InitAppointments()
         ]
         pause_time = 0.01 if quick else 0.3
         for index, init_step in enumerate(init_steps):

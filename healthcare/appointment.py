@@ -38,8 +38,8 @@ class Appointment():
     def date(self):
         return self._date
 
-    def is_on(self, date):
-        return self.date.year == date.year and self.date.month == date.month and self.date.day == date.day
+    def is_on(self, filter_date:datetime.date):
+        return self.date.year == filter_date.year and self.date.month == filter_date.month and self.date.day == filter_date.day
 
     def __lt__(self, other):
         return self.date < other.date
@@ -60,5 +60,5 @@ class Appointment():
         return self.date >= other.date
 
     def __str__(self) -> str:
-        return "{staff} with {patient} - {date} - {type}".format(
+        return "{staff} with {patient} - {date}".format(
             staff=self.staff,patient=self.patient,date=self.date,type=self.type)

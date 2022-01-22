@@ -27,12 +27,12 @@ class Receptionist(Employee):
 
     def find_next_free_timeslot(self, schedule:AppointmentSchedule, professional:HealthcareProfessional, urgent:bool, initial:datetime):
         starting = self._round_initial_time(initial)
-        appointments = schedule.find_appoitment(professional)
+        appointments = schedule.find_appoitment(filter_professional=professional)[0] #being just one professional I have only 1 result
         return self._find_next_slot(appointments, urgent, starting)
 
     def _round_initial_time(self, initial:datetime):
         if initial.minute != 0 and initial.minute != 30:
-            return datetime(initial.year, initial.month, initial.day, initial.hour + (0 if initial.minute<=30 else 1), 0 if initial.minute<=30 else 30)
+            return datetime(initial.year, initial.month, initial.day, initial.hour + (0 if initial.minute<=30 else 1), 30 if initial.minute<=30 else 0)
         else:
             return initial
 

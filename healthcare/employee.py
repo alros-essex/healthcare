@@ -25,4 +25,4 @@ class Employee(ABC):
         return self._employee_number
 
     def __str__(self):
-        return '{}: {}'.format(self.employee_number, self.name)
+        return '{}'.format(self.name)

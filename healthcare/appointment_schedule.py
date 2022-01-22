@@ -3,6 +3,7 @@ from datetime import date, datetime, time, timedelta
 
 from .appointment import Appointment
 from .healthcare_professional import HealthcareProfessional
+from healthcare import appointment
 
 
 class AppointmentSchedule():
@@ -43,21 +44,27 @@ class AppointmentSchedule():
         """
         pass
 
-    def find_appoitment(self, professional:HealthcareProfessional):
+    def find_appoitment(self, filter_professional=None, filter_professionals=[], filter_date:date=None):
         """finds an appoitment
         
         Args:
-            professional: the healthcare professional
+            filter_professional: filter by healthcare professional (default None)
+            filter_professionals: filter by list of healthcare professionals (default None)
+            filter_date: filter by date
         Returns:
-            Appointment: the found appointment
+            Appointment: dict of professional -> (dict of date -> appoitment)
         """
-        return self._appoitments[professional.employee_number]
+        appointments = []
+        for p in self._merge_professional_filters(filter_professional, filter_professionals):
+            appointments.append(self._appoitments[p.employee_number] if filter_date is None else self._filter_by_date(self._appoitments[p.employee_number], filter_date))
+        return appointments
 
-    def get_by_date(self, date:date):
-        all_appointments = []
-        professionals = self.appoitments.keys()
-        for professional in professionals:
-            appointments = self.appointments[professional.employee_number]
-            all_appointments.append([appointment for appointment in appointments if appointment.is_on(date)])
-        return sorted(all_appointments, key=date)
-
+    def _merge_professional_filters(self, filter_professional, filter_professionals):
+        filter = []
+        if filter_professional is not None:
+            filter.append(filter_professional)
+        filter = filter + filter_professionals
+        return filter
+        
+    def _filter_by_date(self, professional_appointments, filter_date:date):
+        return {k: v for k, v in professional_appointments.items() if v.is_on(filter_date)}

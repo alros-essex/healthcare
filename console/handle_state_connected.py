@@ -34,4 +34,4 @@ class StateConnectedHandler(StateHandler):
         ConsoleUtility.print_option('[Q]quit')
         
     def _get_user_choice(self):
-        return ConsoleUtility.prompt_user_for_input(['E', 'P', 'I', 'Q'])
+        return ConsoleUtility.prompt_user_for_input(['E', 'P', 'A', 'I', 'Q'])
