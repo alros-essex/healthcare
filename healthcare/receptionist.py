@@ -30,6 +30,9 @@ class Receptionist(Employee):
         appointments = schedule.find_appoitment(filter_professional=professional)[0] #being just one professional I have only 1 result
         return self._find_next_slot(appointments, urgent, starting)
 
+    def find_patient_appointments(self, schedule:AppointmentSchedule, patient:Patient):
+        return schedule.find_appoitment(filter_patient=patient, flatten=True)
+
     def _round_initial_time(self, initial:datetime):
         if initial.minute != 0 and initial.minute != 30:
             return datetime(initial.year, initial.month, initial.day, initial.hour + (0 if initial.minute<=30 else 1), 30 if initial.minute<=30 else 0)
