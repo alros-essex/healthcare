@@ -1,14 +1,11 @@
 import random
-from types import resolve_bases
 
-from .appointment import Appointment
 from .appointment_schedule import AppointmentSchedule
 from .employee import Employee
 from .doctor import Doctor
 from .nurse import Nurse
 from .patient import Patient
 from .receptionist import Receptionist
-from healthcare import receptionist
 
 class Clinic():
 

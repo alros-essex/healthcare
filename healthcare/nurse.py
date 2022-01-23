@@ -30,5 +30,5 @@ class Nurse(HealthcareProfessional):
     ]
 
     def consultation(self, patient:Patient):
-        return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.name+' '+patient.surname)
+        return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.firstname+' '+patient.surname)
     

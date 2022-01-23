@@ -23,7 +23,7 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
         if receptionist is not None:
             user = self._talk_with_receptionist(clinic, receptionist, context)
             context['user'] = user
-        return State.AS_A_PATIENT
+        return State.AS_A_PATIENT_GO
 
     def _find_a_receptionist(self, clinic:Clinic):
         if len(clinic.receptionists) == 0:
@@ -88,8 +88,8 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
             ConsoleUtility.print_conversation('Do you need a prescription?')
             input = ConsoleUtility.prompt_user_for_input(options=['Y','N'])
             if input == 'Y':
-                prescription = appointment.staff.issue_prescription(patient)
-                ConsoleUtility.print_conversation('Here\s your prescription: {}'.format(prescription))
+                prescription = appointment.staff.issue_prescription()
+                ConsoleUtility.print_conversation('Here\'s your prescription: {}'.format(prescription))
                 clinic.register_prescription(patient, appointment.staff, prescription)
         ConsoleUtility.print_conversation('Take care.')
         clinic.appointment_schedule.cancel_appoitment(appointment)

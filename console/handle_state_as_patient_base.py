@@ -66,14 +66,10 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
                 name = ConsoleUtility.prompt_user_for_input()
         else:
             # handle prefilled configuration
-            ConsoleUtility.print_conversation('Do you have an id?') 
-            self._pause()
-            ConsoleUtility.print_light('Here my id')
-            self._pause()
-            ConsoleUtility.print_conversation('I see... {}'.format(user))
-            self._pause()
             name = user.firstname
             surname = user.surname
+        ConsoleUtility.print_conversation('Let me check in the system.')
+        self._pause()
         patient = receptionist.lookup_patient(clinic, name, surname)
         if patient == None:
             ConsoleUtility.print_conversation('You are not yet in the system, I need to register you as a patient')
@@ -108,7 +104,7 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
     def _cancel_an_appointment(self, clinic:Clinic, receptionist:Receptionist, patient:Patient):
         appointments = self._print_appointments(clinic, receptionist, patient)
         ConsoleUtility.print_conversation('Which one do you want to cancel?')
-        input = ConsoleUtility.prompt_user_for_input(options = range(1, len(appointments)))
+        input = ConsoleUtility.prompt_user_for_input(options = [str(o) for o in range(1, len(appointments)+1)])
         appointment = appointments[int(input)-1]
         receptionist.cancel_appointment(clinic.appointment_schedule, appointment)
         ConsoleUtility.print_conversation('The appointment {} has been cancelled'.format(appointment))

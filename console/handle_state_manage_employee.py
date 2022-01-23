@@ -25,4 +25,4 @@ class StateManageEmployee(StateHandler, ABC):
         ConsoleUtility.print_option('[B]ack')
 
     def _get_user_choice(self):
-        return ConsoleUtility.prompt_user_for_input(['D', 'D', 'R', 'B'])
+        return ConsoleUtility.prompt_user_for_input(['D', 'N', 'R', 'B'])

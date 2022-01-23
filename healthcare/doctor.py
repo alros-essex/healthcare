@@ -51,7 +51,7 @@ class Doctor(HealthcareProfessional):
         Returns:
             str: result of the consultation
         '''
-        return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.name+' '+patient.surname)
+        return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.firstname+' '+patient.surname)
 
     def issue_prescription(self) -> str:
         '''prescribe a drug

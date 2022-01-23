@@ -9,7 +9,7 @@ class InitDoctors(InitHiringStaff):
         return [
             Doctor('James Kildare', 'DR001'),
             Doctor('Gregory House', 'DR002'),
-            Doctor('Augustus Bedford "Duke" Forrest', 'DR003'),
-            Doctor('Benjamin Franklin "Hawkeye" Pierce', 'DR004')
+            Doctor('Augustus Bedford Forrest', 'DR003'),
+            Doctor('Benjamin Franklin Pierce', 'DR004')
         ]
     
