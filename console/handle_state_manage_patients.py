@@ -11,7 +11,7 @@ class StateManagePatients(StateHandler):
         self._next_state = {}
         self._next_state['B']=State.CONNECTED
 
-    def handle(self, clinic:Clinic):
+    def handle(self, clinic:Clinic, context:dict):
         self._print_status(clinic)
         self._print_options()
         return self._next_state[self._get_user_choice()]

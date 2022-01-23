@@ -11,30 +11,56 @@ from .handle_state import StateHandler
 
 class StateAsPatientBaseHandler(StateHandler, ABC):
 
-    def _register_new_patient(self, clinic:Clinic, receptionist:Receptionist, name = None, surname = None):
+    def _register_new_patient(self, clinic:Clinic, receptionist:Receptionist, name = None, surname = None, patient:Patient=None):
+        if patient is None:
+            patient = self._identify_user(name, surname)
+        else:
+            # handle prefilled configuration
+            ConsoleUtility.print_conversation('Do you have an id?') 
+            ConsoleUtility.print_light('Here my id')
+            ConsoleUtility.print_conversation('I see... {}'.format(patient))
+        receptionist.register_patient(clinic, patient)
+        ConsoleUtility.print_conversation('Thank you, now you are one of our patients')
+        return patient
+
+    def _default_or_input(self, default):
+        if default is None:
+            return ConsoleUtility.prompt_user_for_input()
+        else:
+            ConsoleUtility.print_light(default)
+            return default
+
+    def _identify_user(self, name=None, surname=None):
+        ConsoleUtility.print_conversation('Can I have your surname, please?')
         if surname is None:
-            ConsoleUtility.print_conversation('Can I have your surname, please?')
             surname = ConsoleUtility.prompt_user_for_input()
-        if name is None:
-            ConsoleUtility.print_conversation('...and your first name?')
+        else:
+            ConsoleUtility.print_light(surname)
+        ConsoleUtility.print_conversation('...and your first name?')
+        if name is None :
             name = ConsoleUtility.prompt_user_for_input()
+        else:
+            ConsoleUtility.print_light(name)
         ConsoleUtility.print_conversation('What is your address?')
         address = ConsoleUtility.prompt_user_for_input()
         ConsoleUtility.print_conversation('What is your phone number?')
         # TODO validation
         phone = ConsoleUtility.prompt_user_for_input()
-        patient = Patient(name, surname, address, phone)
-        receptionist.register_patient(clinic, patient)
-        ConsoleUtility.print_conversation('Thank you, now you are one of our patients')
-        return patient
+        return Patient(name, surname, address, phone)
 
-    def _make_an_appointment(self, clinic:Clinic, receptionist:Receptionist, surname = None, name = None):
-        if surname is None:
-            ConsoleUtility.print_conversation('Can I have your surname, please?')
-            surname = ConsoleUtility.prompt_user_for_input()
-        if name is None:
-            ConsoleUtility.print_conversation('Can I have your first name, please?')
-            name = ConsoleUtility.prompt_user_for_input()
+    def _make_an_appointment(self, clinic:Clinic, receptionist:Receptionist, patient:Patient, surname = None, name = None):
+        if patient is None:
+            if surname is None:
+                ConsoleUtility.print_conversation('Can I have your surname, please?')
+                surname = ConsoleUtility.prompt_user_for_input()
+            if name is None:
+                ConsoleUtility.print_conversation('Can I have your first name, please?')
+                name = ConsoleUtility.prompt_user_for_input()
+        else:
+            # handle prefilled configuration
+            ConsoleUtility.print_conversation('Do you have an id?') 
+            ConsoleUtility.print_light('Here my id')
+            ConsoleUtility.print_conversation('I see... {}'.format(patient))
         patient = receptionist.lookup_patient(clinic, name, surname)
         if patient == None:
             ConsoleUtility.print_conversation('You are not yet in the system, I need to register you as a patient')

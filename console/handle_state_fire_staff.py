@@ -11,7 +11,7 @@ class StateFireStaff(ABC):
         self._next_state = next_state
         self._type = type
 
-    def handle(self, clinic:Clinic):
+    def handle(self, clinic:Clinic, context:dict):
         ConsoleUtility.print_option('Please insert employee number')
         employee_number = ConsoleUtility.prompt_user_for_input()
         fired, message = clinic.fire(employee_number, self._type)

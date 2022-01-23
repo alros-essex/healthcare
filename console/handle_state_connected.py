@@ -14,7 +14,7 @@ class StateConnectedHandler(StateHandler):
         self._next_state['I']=State.AS_A_PATIENT
         self._next_state['Q']=State.QUIT
 
-    def handle(self, clinic:Clinic):
+    def handle(self, clinic:Clinic, context:dict):
         self._print_status(clinic)
         self._print_options()
         return self._next_state[self._get_user_choice()]

@@ -10,7 +10,7 @@ class StateHireStaff(ABC):
     def __init__(self, next_state:State):
         self._next_state = next_state
 
-    def handle(self, clinic:Clinic):
+    def handle(self, clinic:Clinic, context:dict):
         ConsoleUtility.print_option('Please insert name')
         name = ConsoleUtility.prompt_user_for_input()
         ConsoleUtility.print_option('Please insert employee number')

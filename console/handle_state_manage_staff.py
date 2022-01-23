@@ -14,7 +14,7 @@ class StateManageStaff(StateHandler, ABC):
         self._next_state['F'] = state_fire
         self._next_state['B']=State.MANAGE_EMPLOYEES
 
-    def handle(self, clinic:Clinic):
+    def handle(self, clinic:Clinic, context:dict):
         self._print_status(clinic)
         self._print_options()
         return self._next_state[self._get_user_choice()]

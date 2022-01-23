@@ -12,10 +12,11 @@ from .handle_state_as_patient_base import StateAsPatientBaseHandler
 
 class StateAsPatientGoHandler(StateAsPatientBaseHandler):
 
-    def handle(self, clinic:Clinic):
+    def handle(self, clinic:Clinic, context:dict):
         receptionist = self._find_a_receptionist(clinic)
         if receptionist is not None:
-            self._talk_with_receptionist(clinic, receptionist)
+            user = self._talk_with_receptionist(clinic, receptionist, context.get('user'))
+            context['user'] = user
         return State.AS_A_PATIENT
 
     def _find_a_receptionist(self, clinic:Clinic):
@@ -24,15 +25,22 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
             return None
         return clinic.receptionists[random.randint(0, len(clinic.receptionists)-1)]
 
-    def _talk_with_receptionist(self, clinic:Clinic, receptionist:Receptionist):
-        ConsoleUtility.print_conversation('Can I help you? What\'s your surnname?')
-        surname = ConsoleUtility.prompt_user_for_input()
-        ConsoleUtility.print_conversation('...and your first name?')
-        name = ConsoleUtility.prompt_user_for_input()
+    def _talk_with_receptionist(self, clinic:Clinic, receptionist:Receptionist, user:Patient):
+        if user is not None:
+            # handle configuration
+            ConsoleUtility.print_conversation('Can I help you?')
+            ConsoleUtility.print_light('My name is {}'.format(user))
+            name = user.firstname
+            surname = user.surname
+        else:
+            ConsoleUtility.print_conversation('Can I help you? What\'s your surnname?')
+            surname = ConsoleUtility.prompt_user_for_input()
+            ConsoleUtility.print_conversation('...and your first name?')
+            name = ConsoleUtility.prompt_user_for_input()
         patient = receptionist.lookup_patient(clinic, name, surname)
         if patient is None:
             ConsoleUtility.print_conversation('You are not yet in the system, I need to register you as a patient')
-            patient = self._register_new_patient(clinic, receptionist, name = name, surname = surname)
+            patient = self._register_new_patient(clinic, receptionist, name = name, surname = surname, patient=user)
         ConsoleUtility.print_conversation('How can I help you?')
         appointments = receptionist.find_patient_appointments(clinic.appointment_schedule, patient)
         ConsoleUtility.print_conversation('Currently, you have {} appointment{}'.format(len(appointments),'s' if len(appointments)>1 else ''))
