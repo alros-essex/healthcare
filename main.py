@@ -27,5 +27,5 @@ if __name__ == "__main__":
         initializer = Initializer()
         initializer.init(clinic, quick=args.quick)
 
-    console = Console()
+    console = Console(quick=args.quick)
     console.loop(clinic)

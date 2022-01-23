@@ -26,7 +26,8 @@ LOG = '@log'
 
 class Console():
 
-    def __init__(self):
+    def __init__(self, quick:bool=False):
+        self._quick = quick
         self._handlers = {}
         self._handlers[State.CONNECTED] = StateConnectedHandler()
         self._handlers[State.MANAGE_EMPLOYEES] = StateManageEmployee()
@@ -42,8 +43,8 @@ class Console():
         self._handlers[State.MANAGE_PATIENTS] = StateManagePatients()
         self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler()
         self._handlers[State.AS_A_PATIENT_CONFIGURE] = StateAsPatientConfigureHandler()
-        self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler()
-        self._handlers[State.AS_A_PATIENT_GO] = StateAsPatientGoHandler()
+        self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler(quick=quick)
+        self._handlers[State.AS_A_PATIENT_GO] = StateAsPatientGoHandler(quick=quick)
         self._handlers[State.VIEW_APPOINTMENTS] = StateViewAppointmentsHandler()
 
     def loop(self, clinic:Clinic):

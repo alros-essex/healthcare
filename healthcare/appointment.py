@@ -27,7 +27,7 @@ class Appointment():
         return self._type
 
     @property
-    def staff(self):
+    def staff(self) ->HealthcareProfessional:
         return self._staff
 
     @property

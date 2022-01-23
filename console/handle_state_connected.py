@@ -30,7 +30,9 @@ class StateConnectedHandler(StateHandler):
         ConsoleUtility.print_option('Manage [E]employees')
         ConsoleUtility.print_option('Manage [P]atients')
         ConsoleUtility.print_option('View [A]ppointments')
+        ConsoleUtility.print_option(' --- ')
         ConsoleUtility.print_option('[I]nteract as a patient')
+        ConsoleUtility.print_option(' --- ')
         ConsoleUtility.print_option('[Q]quit')
         
     def _get_user_choice(self):

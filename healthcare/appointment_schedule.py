@@ -36,15 +36,15 @@ class AppointmentSchedule():
         """
         self._appoitments[appointment.staff.employee_number][appointment.date]=appointment
 
-    def cancel_appoitment(self):
+    def cancel_appoitment(self, appointment:Appointment):
         """deletes an appoitment
         
         Args:
-            None
+            appointment: the appointment to delete
         Returns:
-            Appointment: appoitment just deleted
+            None
         """
-        pass
+        self._appoitments[appointment.staff.employee_number].pop(appointment.date)
 
     def find_appoitment(self, filter_professional:HealthcareProfessional=None, 
         filter_professionals=[], filter_date:date=None, filter_patient:Patient=None, flatten:bool = False):

@@ -1,5 +1,6 @@
 from abc import ABC
 from datetime import datetime
+import time
 
 from healthcare.patient import Patient
 from healthcare.clinic import Clinic
@@ -11,14 +12,20 @@ from .handle_state import StateHandler
 
 class StateAsPatientBaseHandler(StateHandler, ABC):
 
+    def __init__(self, quick:bool=False):
+        self._quick = quick
+
     def _register_new_patient(self, clinic:Clinic, receptionist:Receptionist, name = None, surname = None, patient:Patient=None):
         if patient is None:
             patient = self._identify_user(name, surname)
         else:
             # handle prefilled configuration
             ConsoleUtility.print_conversation('Do you have an id?') 
-            ConsoleUtility.print_light('Here my id')
+            self._pause()
+            ConsoleUtility.print_light('Here it is!')
+            self._pause()
             ConsoleUtility.print_conversation('I see... {}'.format(patient))
+            self._pause()
         receptionist.register_patient(clinic, patient)
         ConsoleUtility.print_conversation('Thank you, now you are one of our patients')
         return patient
@@ -48,8 +55,8 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
         phone = ConsoleUtility.prompt_user_for_input()
         return Patient(name, surname, address, phone)
 
-    def _make_an_appointment(self, clinic:Clinic, receptionist:Receptionist, patient:Patient, surname = None, name = None):
-        if patient is None:
+    def _make_an_appointment(self, clinic:Clinic, receptionist:Receptionist, user:Patient, surname = None, name = None):
+        if user is None:
             if surname is None:
                 ConsoleUtility.print_conversation('Can I have your surname, please?')
                 surname = ConsoleUtility.prompt_user_for_input()
@@ -59,8 +66,13 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
         else:
             # handle prefilled configuration
             ConsoleUtility.print_conversation('Do you have an id?') 
+            self._pause()
             ConsoleUtility.print_light('Here my id')
-            ConsoleUtility.print_conversation('I see... {}'.format(patient))
+            self._pause()
+            ConsoleUtility.print_conversation('I see... {}'.format(user))
+            self._pause()
+            name = user.firstname
+            surname = user.surname
         patient = receptionist.lookup_patient(clinic, name, surname)
         if patient == None:
             ConsoleUtility.print_conversation('You are not yet in the system, I need to register you as a patient')
@@ -97,3 +109,6 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
 
     def _find_next_appointment(self, clinic:Clinic, receptionist:Receptionist, patient:Patient):
         receptionist.find_patient_appointments(clinic.appointment_schedule, patient)
+
+    def _pause(self):
+        time.sleep(0.5 if self._quick else 1.5)

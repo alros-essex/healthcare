@@ -11,6 +11,9 @@ from .handle_state_as_patient_base import StateAsPatientBaseHandler
 
 class StateAsPatientCallHandler(StateAsPatientBaseHandler):
 
+    def __init__(self, quick: bool = False):
+        super().__init__(quick=quick)
+
     def handle(self, clinic:Clinic, context:dict):
         user = self._have_a_call(clinic, context.get('user'))
         context['user']=user

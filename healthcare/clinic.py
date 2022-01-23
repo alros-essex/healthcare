@@ -17,6 +17,7 @@ class Clinic():
         self._patients = []
         self._appointment_schedule = AppointmentSchedule()
         self._name = 'Golden Oak Clinic'
+        self._prescriptions = []
     
     def hire(self, employee:Employee):
         self._staff.append(employee)
@@ -35,6 +36,9 @@ class Clinic():
 
     def register_patient(self, patient:Patient):
         self._patients.append(patient)
+
+    def register_prescription(self, patient:Patient, doctor:Doctor, prescription:str):
+        self._prescriptions.append(Prescription(patient, doctor, prescription))
 
     def call(self) -> Receptionist:
         receptionists = self.receptionists
@@ -71,4 +75,8 @@ class Clinic():
     def _get_by_type(self, type):
         return list(filter(lambda staff: isinstance(staff,type), self._staff))
 
-    
+class Prescription():
+    def __init__(self, patient:Patient, doctor:Doctor, prescription:str) -> None:
+        self._patient = patient
+        self._doctor = doctor
+        self._prescription = prescription

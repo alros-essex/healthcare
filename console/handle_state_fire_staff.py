@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
+from console.handle_state import StateHandler
 
 from console.state import State
 from healthcare.clinic import Clinic
 
 from .console_utility import ConsoleUtility
 
-class StateFireStaff(ABC):
+class StateFireStaff(StateHandler, ABC):
     
     def __init__(self, next_state:State, type):
         self._next_state = next_state
