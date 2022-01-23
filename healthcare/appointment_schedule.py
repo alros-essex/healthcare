@@ -84,7 +84,7 @@ class AppointmentSchedule():
         return {k: v for k, v in professional_appointments.items() if v.is_on(filter_date)}
 
     def _filter_by_patient(self, professional_appointments, filter_patient:Patient):
-        return {key:value for (key,value) in professional_appointments.items() if value.patient == filter_patient}
+        return {key:value for (key,value) in professional_appointments.items() if value is not None and value.patient == filter_patient}
 
     def _flatten(self, appoitments):
         return [app for cal in appoitments for k,app in cal.items() if app is not None]

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .event import Event
+from healthcare.event import Event
 
 class EventListener(ABC):
     

@@ -20,9 +20,13 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
 
     def handle(self, clinic:Clinic, context:dict):
         receptionist = self._find_a_receptionist(clinic)
+        justId = False
         if receptionist is not None:
-            user = self._talk_with_receptionist(clinic, receptionist, context)
-            context['user'] = user
+            loop = True
+            while loop:
+                user, loop = self._talk_with_receptionist(clinic, receptionist, context, justId)
+                context['user'] = user
+                justId = True
         return State.AS_A_PATIENT_GO
 
     def _find_a_receptionist(self, clinic:Clinic):
@@ -31,13 +35,16 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
             return None
         return clinic.receptionists[random.randint(0, len(clinic.receptionists)-1)]
 
-    def _talk_with_receptionist(self, clinic:Clinic, receptionist:Receptionist, context):
+    def _talk_with_receptionist(self, clinic:Clinic, receptionist:Receptionist, context, justId:bool):
         user:Patient = context.get('user')
-        patient = self._front_desk_identity_user(clinic, receptionist, user)
+        if not justId:
+            patient = self._front_desk_identity_user(clinic, receptionist, user)
+        else:
+            patient = user
         appointments = self._print_appointments(clinic, receptionist, patient)
         context['appointment'] = appointments
         self._pause()
-        ConsoleUtility.print_conversation('How can I help you?')
+        ConsoleUtility.print_conversation('How can I help you{}?'.format(' now' if justId else ''))
         ConsoleUtility.print_option('[M]ake an appointment')
         if len(appointments) > 0:
             ConsoleUtility.print_option('[S]ee a doctor (next appointment)')
@@ -46,14 +53,15 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
         input = ConsoleUtility.prompt_user_for_input(options=['M','S','C','G'])
         if input == 'M':
             self._make_an_appointment(clinic, receptionist, user=patient)
+            return patient, True
         elif input == 'S':
             self._see_staff(clinic, patient, appointments[0])
+            return patient, True
         elif input == 'C':
             self._cancel_an_appointment(clinic, receptionist, patient=patient)
+            return patient, True
         else:
-            pass
-
-        return patient
+            return patient, False
 
     def _front_desk_identity_user(self, clinic:Clinic, receptionist:Receptionist, user:Patient) -> Patient:
         if user is not None:
@@ -65,13 +73,18 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
             name = user.firstname
             surname = user.surname
         else:
-            ConsoleUtility.print_conversation('Can I help you? What\'s your surnname?')
+            ConsoleUtility.print_conversation('Hello. Can I help you?')
+            self._pause()
+            ConsoleUtility.print_light('Hi, yes.')
+            self._pause()
+            ConsoleUtility.print_conversation('What\'s your surname?')
             surname = ConsoleUtility.prompt_user_for_input()
             ConsoleUtility.print_conversation('...and your first name?')
             name = ConsoleUtility.prompt_user_for_input()
         patient = receptionist.lookup_patient(clinic, name, surname)
         if patient is None:
             ConsoleUtility.print_conversation('You are not yet in the system, I need to register you as a patient')
+            self._pause()
             patient = self._register_new_patient(clinic, receptionist, name = name, surname = surname, patient=user)
         return patient
 
@@ -90,8 +103,12 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
             if input == 'Y':
                 prescription = appointment.staff.issue_prescription()
                 ConsoleUtility.print_conversation('Here\'s your prescription: {}'.format(prescription))
+                self._pause()
+                ConsoleUtility.print_light('Thank you')
                 clinic.register_prescription(patient, appointment.staff, prescription)
         ConsoleUtility.print_conversation('Take care.')
+        self._pause()
+        ConsoleUtility.print_light('Bye')
         clinic.appointment_schedule.cancel_appoitment(appointment)
 
     def _can_issue_prescription(self, staff:HealthcareProfessional) -> bool:

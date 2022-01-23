@@ -39,16 +39,12 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
             return default
 
     def _identify_user(self, name=None, surname=None):
-        ConsoleUtility.print_conversation('Can I have your surname, please?')
         if surname is None:
+            ConsoleUtility.print_conversation('Can I have your surname, please?')
             surname = ConsoleUtility.prompt_user_for_input()
-        else:
-            ConsoleUtility.print_light(surname)
-        ConsoleUtility.print_conversation('...and your first name?')
         if name is None :
+            ConsoleUtility.print_conversation('...and your first name?')
             name = ConsoleUtility.prompt_user_for_input()
-        else:
-            ConsoleUtility.print_light(name)
         ConsoleUtility.print_conversation('What is your address?')
         address = ConsoleUtility.prompt_user_for_input()
         ConsoleUtility.print_conversation('What is your phone number?')

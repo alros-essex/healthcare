@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from healthcare.clinic import Clinic
 from healthcare.event import Event
-from healthcare.event_listener import EventListener
+from console.event_listener import EventListener
 
 class InitTask(ABC):
     def __init__(self, sub_steps_count:int, description:str):

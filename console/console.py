@@ -42,7 +42,8 @@ class Console():
         self._handlers[State.FIRE_A_RECEPTIONIST] = StateFireReceptionist()
         self._handlers[State.MANAGE_PATIENTS] = StateManagePatients()
         self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler()
-        self._handlers[State.AS_A_PATIENT_CONFIGURE] = StateAsPatientConfigureHandler()
+        # TODO clean
+        # self._handlers[State.AS_A_PATIENT_CONFIGURE] = StateAsPatientConfigureHandler()
         self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler(quick=quick)
         self._handlers[State.AS_A_PATIENT_GO] = StateAsPatientGoHandler(quick=quick)
         self._handlers[State.VIEW_APPOINTMENTS] = StateViewAppointmentsHandler()
