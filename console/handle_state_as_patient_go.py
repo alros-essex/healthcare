@@ -1,4 +1,5 @@
 from datetime import datetime
+import enum
 import random
 from healthcare.appointment import Appointment
 from healthcare.healthcare_professional import HealthcareProfessional
@@ -48,7 +49,7 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
         elif input == 'S':
             self._see_staff(clinic, patient, appointments[0])
         elif input == 'C':
-            self._cancel_an_appointment(clinic, receptionist)
+            self._cancel_an_appointment(clinic, receptionist, patient=patient)
         else:
             pass
 
@@ -73,13 +74,6 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
             ConsoleUtility.print_conversation('You are not yet in the system, I need to register you as a patient')
             patient = self._register_new_patient(clinic, receptionist, name = name, surname = surname, patient=user)
         return patient
-
-    def _print_appointments(self, clinic, receptionist, patient):
-        appointments = receptionist.find_patient_appointments(clinic.appointment_schedule, patient)
-        ConsoleUtility.print_conversation('Currently, you have {} appointment{}'.format(len(appointments),'s' if len(appointments)>1 else ''))
-        for appointment in appointments:
-            ConsoleUtility.print_light('{} with {}'.format(appointment.date, appointment.staff))
-        return appointments
 
     def _see_staff(self, clinic:Clinic, patient:Patient, appointment:Appointment):
         ConsoleUtility.print_conversation('Hi, I am {} {}'.format(appointment.staff.role, appointment.staff.name))

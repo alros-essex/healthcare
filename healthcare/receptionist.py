@@ -16,8 +16,8 @@ class Receptionist(Employee):
         # TODO implement types
         schedule.add_appoitment(Appointment('', staff, patient, time))
 
-    def cancel_appointment(self):
-        pass
+    def cancel_appointment(self, schedule:AppointmentSchedule, appointment:Appointment):
+        schedule.cancel_appoitment(appointment)
 
     def lookup_patient(self, clinic, name:str, surname:str):
         return next(filter(lambda p: ', '.join([surname, name]) == p.name,clinic.patients), None)
