@@ -1,13 +1,14 @@
-from datetime import datetime, date
+from datetime import datetime
+
+from .appointment_type import AppointmentType
 from .healthcare_professional import HealthcareProfessional
 from .patient import Patient
-from healthcare import patient
 
 class Appointment():
     """
     Represents an appointment
     """
-    def __init__(self, type:str, staff:HealthcareProfessional, patient:Patient, date:datetime):
+    def __init__(self, type:AppointmentType, staff:HealthcareProfessional, patient:Patient, date:datetime):
         """creates the instance
         
         Args:
@@ -23,7 +24,7 @@ class Appointment():
         self._date = date
 
     @property
-    def type(self):
+    def type(self) -> AppointmentType:
         return self._type
 
     @property
@@ -31,32 +32,32 @@ class Appointment():
         return self._staff
 
     @property
-    def patient(self):
+    def patient(self) -> Patient:
         return self._patient
 
     @property
-    def date(self):
+    def date(self) -> datetime:
         return self._date
 
-    def is_on(self, filter_date:datetime.date):
+    def is_on(self, filter_date:datetime.date) -> bool:
         return self.date.year == filter_date.year and self.date.month == filter_date.month and self.date.day == filter_date.day
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.date < other.date
     
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         return self.date <= other.date
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.date == other.date
     
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return self.date != other.date
     
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return self.date > other.date
     
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return self.date >= other.date
 
     def __str__(self) -> str:

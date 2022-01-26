@@ -9,8 +9,8 @@ from initializer.initializer import Initializer
 
 # TODO clean
 def run_test():
-    from test.appointment_schedule import TestAppointmentSchedule
-    TestAppointmentSchedule().test_same_patient_two_doctors_flatten()
+    from test.appointment_schedule_test import TestAppointmentSchedule
+    TestAppointmentSchedule().test_cancel_appoitment()
 
 if __name__ == "__main__":
     # TODO clean
