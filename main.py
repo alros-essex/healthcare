@@ -9,8 +9,8 @@ from initializer.initializer import Initializer
 
 # TODO clean
 def run_test():
-    from test.appointment_schedule_test import TestAppointmentSchedule
-    TestAppointmentSchedule().test_cancel_appoitment()
+    from test.receptionist_test import TestReceptionist
+    # TestReceptionist().test_skip_weekends()
 
 if __name__ == "__main__":
     # TODO clean

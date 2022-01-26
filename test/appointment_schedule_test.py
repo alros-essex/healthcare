@@ -2,6 +2,7 @@ from datetime import datetime
 import unittest
 from healthcare.appointment import Appointment
 from healthcare.appointment_schedule import AppointmentSchedule
+from healthcare.appointment_type import AppointmentType
 from healthcare.doctor import Doctor
 from healthcare.patient import Patient
 
@@ -87,9 +88,9 @@ class TestAppointmentSchedule(unittest.TestCase):
         patient1 = Patient('John','Doe','Some Street 1','1234567')
         doctor2 = Doctor('Jodie Whittaker', 'DR321')
         schedule = AppointmentSchedule()
-        schedule.add_appoitment(Appointment('',doctor1,patient1, datetime(2022,1,22,10,30)))
-        schedule.add_appoitment(Appointment('',doctor2,patient1, datetime(2022,1,22,11,30)))
-        schedule.add_appoitment(Appointment('',doctor2,patient1, datetime(2022,1,22,12,30)))
+        schedule.add_appoitment(Appointment(AppointmentType.NORMAL,doctor1,patient1, datetime(2022,1,22,10,30)))
+        schedule.add_appoitment(Appointment(AppointmentType.NORMAL,doctor2,patient1, datetime(2022,1,22,11,30)))
+        schedule.add_appoitment(Appointment(AppointmentType.NORMAL,doctor2,patient1, datetime(2022,1,22,12,30)))
 
         schedule.cancel_appoitment(Appointment('',doctor2,patient1, datetime(2022,1,22,11,30)))
 

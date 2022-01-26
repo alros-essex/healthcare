@@ -5,7 +5,6 @@ from console.state import State
 
 from .handle_state_as_patient import StateAsPatientHandler
 from .handle_state_as_patient_call import StateAsPatientCallHandler
-from .handle_state_as_patient_configure import StateAsPatientConfigureHandler
 from .handle_state_as_patient_go import StateAsPatientGoHandler
 from .handle_state_connected import StateConnectedHandler
 from .handle_state_hire_a_doctor import StateHireDoctor
@@ -42,8 +41,6 @@ class Console():
         self._handlers[State.FIRE_A_RECEPTIONIST] = StateFireReceptionist()
         self._handlers[State.MANAGE_PATIENTS] = StateManagePatients()
         self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler()
-        # TODO clean
-        # self._handlers[State.AS_A_PATIENT_CONFIGURE] = StateAsPatientConfigureHandler()
         self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler(quick=quick)
         self._handlers[State.AS_A_PATIENT_GO] = StateAsPatientGoHandler(quick=quick)
         self._handlers[State.VIEW_APPOINTMENTS] = StateViewAppointmentsHandler()

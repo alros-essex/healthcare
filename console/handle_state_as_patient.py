@@ -8,8 +8,6 @@ class StateAsPatientHandler(StateHandler):
     
     def __init__(self):
         self._next_state = {}
-        # TODO remove
-        # self._next_state['Y']=State.AS_A_PATIENT_CONFIGURE
         self._next_state['C']=State.AS_A_PATIENT_CALL
         self._next_state['G']=State.AS_A_PATIENT_GO
         self._next_state['B']=State.CONNECTED
@@ -19,8 +17,6 @@ class StateAsPatientHandler(StateHandler):
         return self._next_state[self._get_user_choice()]
 
     def _print_options(self):
-        # ConsoleUtility.print_option('Configure [Y]our data')
-        # ConsoleUtility.print_option(' --- ')
         ConsoleUtility.print_option('[C]all the clinic')
         ConsoleUtility.print_option('[G]o to the clinic')
         ConsoleUtility.print_option('[B]ack')

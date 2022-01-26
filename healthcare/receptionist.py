@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+from healthcare import appointment_type
 
 from healthcare.appointment_schedule import AppointmentSchedule
+from healthcare.appointment_type import AppointmentType
 from .appointment import Appointment
 from .healthcare_professional import HealthcareProfessional
 from .employee import Employee
@@ -13,8 +15,8 @@ class Receptionist(Employee):
         super().__init__(name, employee_number)
 
     def make_appointment(self, schedule:AppointmentSchedule, staff:HealthcareProfessional, patient:Patient, time:datetime, urgent:bool):
-        # TODO implement types
-        schedule.add_appoitment(Appointment('', staff, patient, time))
+        appointment_type = AppointmentType.URGENT if urgent else AppointmentType.NORMAL
+        schedule.add_appoitment(Appointment(appointment_type, staff, patient, time))
 
     def cancel_appointment(self, schedule:AppointmentSchedule, appointment:Appointment):
         schedule.cancel_appoitment(appointment)
@@ -49,7 +51,7 @@ class Receptionist(Employee):
                 time_slot = self._next_slot(urgent, time_slot)
         return empty_slot
 
-    def _next_slot(self, urgent:bool, starting:datetime):
+    def _next_slot(self, urgent:bool, starting:datetime) -> datetime:
         slot = starting + timedelta(minutes=30)
         if not self._is_it_open(starting, urgent):
             slot = self._urgent_next_opening_time(slot) if urgent else self._non_urgent_next_opening_time(slot)
@@ -60,12 +62,19 @@ class Receptionist(Employee):
     def _is_it_open(self, time:datetime, urgent:bool):
         opening = datetime(time.year, time.month, time.day, 8 if urgent else 9)
         closing = datetime(time.year, time.month, time.day, 14 if urgent else 13)
-        return closing >= time and time >= opening
+        return closing >= time and time >= opening and time.weekday()<5
 
     def _non_urgent_next_opening_time(self, starting:datetime):
-        opening = starting.replace(hour=9, minute=0, second=0, microsecond=0)
-        return opening if opening > starting else opening + timedelta(days=1)
-
+        return self._next_opening_time(starting, 9)
+        
     def _urgent_next_opening_time(self, starting:datetime):
-        opening = starting.replace(hour=8, minute=0, second=0, microsecond=0)
-        return opening if opening > starting else opening + timedelta(days=1)
+        return self._next_opening_time(starting, 8)
+
+    def _next_opening_time(self, starting:datetime, starts_at:int):
+        # opening today
+        opening = starting.replace(hour=starts_at, minute=0, second=0, microsecond=0)
+        # if it's already open, next is tomorrow
+        opening = opening if opening > starting else opening + timedelta(days=1)
+        # if opening is on a Saturday or a Sunday, move to Monday
+        # sorry... this clinic is closed in the weekends!
+        return opening if opening.weekday()<5 else opening + timedelta(days=7-opening.weekday())
