@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 from healthcare import appointment_type
 
-from healthcare.appointment_schedule import AppointmentSchedule
-from healthcare.appointment_type import AppointmentType
+from .appointment_schedule import AppointmentSchedule
+from .appointment_type import AppointmentType
 from .appointment import Appointment
 from .healthcare_professional import HealthcareProfessional
 from .employee import Employee
+from .employee_role import EmployeeRole
 from .patient import Patient
 
 
@@ -13,6 +14,10 @@ class Receptionist(Employee):
 
     def __init__(self, name: str, employee_number: str):
         super().__init__(name, employee_number)
+
+    @property
+    def role(self):
+        return EmployeeRole.RECEPTIONIST
 
     def make_appointment(self, schedule:AppointmentSchedule, staff:HealthcareProfessional, patient:Patient, time:datetime, urgent:bool):
         appointment_type = AppointmentType.URGENT if urgent else AppointmentType.NORMAL

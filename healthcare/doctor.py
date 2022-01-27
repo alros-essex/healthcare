@@ -1,7 +1,8 @@
 import random
 
-from healthcare.patient import Patient
+from .employee_role import EmployeeRole
 from .healthcare_professional import HealthcareProfessional
+from .patient import Patient
 
 class Doctor(HealthcareProfessional):
     """
@@ -16,7 +17,7 @@ class Doctor(HealthcareProfessional):
         Returns:
             None
         """
-        super().__init__(name, employee_number, 'doctor')
+        super().__init__(name, employee_number, EmployeeRole.DOCTOR)
 
     _consultation_results = [
         'Medical history and symptoms of {} were evaluated',

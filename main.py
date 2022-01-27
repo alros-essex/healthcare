@@ -5,12 +5,14 @@ from healthcare.clinic import Clinic
 from console.console import Console
 from initializer.initializer import Initializer
 
+from test.storage_test import TestStorage
+
 # a convenient main to call the application
 
 # TODO clean
 def run_test():
     from test.receptionist_test import TestReceptionist
-    # TestReceptionist().test_skip_weekends()
+    TestStorage().test_insert_select_doctor()
 
 if __name__ == "__main__":
     # TODO clean

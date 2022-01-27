@@ -24,5 +24,10 @@ class Employee(ABC):
     def employee_number(self):
         return self._employee_number
 
+    @property
+    @abstractmethod
+    def role(self):
+        pass
+
     def __str__(self):
         return '{}'.format(self.name)
