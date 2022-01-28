@@ -12,7 +12,7 @@ from test.storage_test import TestStorage
 # TODO clean
 def run_test():
     from test.receptionist_test import TestReceptionist
-    TestStorage().test_insert_select_doctor()
+    TestStorage().test_insert_select_patient()
 
 if __name__ == "__main__":
     # TODO clean
