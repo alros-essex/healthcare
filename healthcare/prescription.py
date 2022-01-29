@@ -5,7 +5,7 @@ class Prescription():
     """
     Represents a prescription for a patient
     """
-    def __init__(self, type:str, patient:Patient, doctor:Doctor, quantity:int, dosage:float):
+    def __init__(self, type:str, patient:Patient, doctor:Doctor, quantity:int, dosage:str):
         """creates the instance
         
         Args:
@@ -13,7 +13,7 @@ class Prescription():
             patient: patient receiving the prescription
             doctor: doctor issuing the prescription
             quantity: amount
-            dosage: dosage in mg
+            dosage: how to dose it
         Returns:
             None
         """
@@ -24,7 +24,7 @@ class Prescription():
         self._dosage = dosage
 
     @property
-    def type(self):
+    def type(self) -> str:
         return self._type
 
     @property
@@ -42,3 +42,7 @@ class Prescription():
     @property
     def dosage(self):
         return self._dosage
+
+    def __str__(self) -> str:
+        return '{quantity} packets, {type} {dosage}'.format(
+            quantity = self.quantity, type = self.type, dosage = self.dosage)

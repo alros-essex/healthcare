@@ -1,5 +1,6 @@
 from datetime import datetime
 import random
+from healthcare.receptionist import Receptionist
 
 from healthcare.storage import Storage
 from healthcare.appointment_schedule import AppointmentSchedule
@@ -15,14 +16,14 @@ class InitAppointments(InitTask):
     def init(self):
         doctors = self._storage.select_doctors()
         patients = self._storage.select_patients()
-        receptionist = self._storage.select_receptionists()[0]
+        receptionist:Receptionist = self._storage.select_receptionists()[0]
         receptionist.connect_to_schedule(self._schedule)
         for i in range(0,11):
             patient = patients[random.randrange(0,len(patients))]
             doctor = doctors[random.randrange(0,len(doctors))]
             self._notify('booking appointment for {}'.format(patient))
-            slot = receptionist.find_next_free_timeslot(doctor, False, datetime.now())
-            receptionist.make_appointment(doctor, patient, slot, False)
+            appointment = receptionist.propose_appointment(doctor, patient, False, datetime.now())
+            receptionist.register_appointment(appointment)
         self._notify('booking appointment: done')
 
  

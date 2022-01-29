@@ -103,6 +103,36 @@ class TestAppointmentSchedule(unittest.TestCase):
         self.assertEquals(patient1, calendars[1][datetime(2022,1,22,12,30)].patient)
         self.assertEquals(doctor2, calendars[1][datetime(2022,1,22,12,30)].staff)
 
+    def test_round_initial_time_round_hours(self):
+        schedule = AppointmentSchedule()
+        
+        before = schedule._round_initial_time(datetime(2022, 1, 21, 8, 28))
+        self.assertEqual(datetime(2022, 1, 21, 8, 30), before, 'it was: {}'.format(before))
+
+        after = schedule._round_initial_time(datetime(2022, 1, 21, 8, 38))
+        self.assertEqual(datetime(2022, 1, 21, 9, 0), after, 'it was: {}'.format(after))
+
+    def test_next_slot_next_same_day(self):
+        schedule = AppointmentSchedule()
+
+        next = schedule._next_slot(False, datetime(2022, 1, 27, 7, 0))
+
+        self.assertEquals(datetime(2022, 1, 27, 9, 0), next)
+
+    def test_next_slot_next_tomorrow(self):
+        schedule = AppointmentSchedule()
+
+        next = schedule._next_slot(False, datetime(2022, 1, 27, 17, 0))
+
+        self.assertEquals(datetime(2022, 1, 28, 9, 0), next)
+
+    def test_next_slot_skip_weekends(self):
+        schedule = AppointmentSchedule()
+
+        next = schedule._next_slot(False, datetime(2022, 1, 28, 19, 0))
+
+        self.assertEquals(datetime(2022, 1, 31, 9, 0), next)
+
 
 if __name__ == '__main__':
     unittest.main()

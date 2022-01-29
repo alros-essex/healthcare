@@ -1,4 +1,5 @@
 import random
+from enum import Enum
 
 from .employee_role import EmployeeRole
 from .healthcare_professional import HealthcareProfessional
@@ -31,19 +32,6 @@ class Doctor(HealthcareProfessional):
         'Gave good news to {}'
     ]
 
-    _drug_names = [
-        'Javalin 1000',
-        'Pythoxib 500',
-        'Kothlinax 40ml',
-        'Rubyonrailaxetate',
-        'Prologlin',
-        'Rustolin drops',
-        'Scalanin 400mg'
-        'Visualbasicaxolin',
-        'Lispodin',
-        'Malbolgex'
-    ]
-
     def consultation(self, patient:Patient) -> str:
         '''conducts a consultation
         
@@ -54,7 +42,11 @@ class Doctor(HealthcareProfessional):
         '''
         return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.firstname+' '+patient.surname)
 
-    def issue_prescription(self) -> str:
+    _frequency = ['once a day','once a week','every two days','before meals']
+    _type = ['Javalin','Pythoxib','Kothlinax','Rubyonrailaxetate','Prologlin','Rustolin','Malbolgex']
+    _dosages = ['half pill','one pill','two pills']
+
+    def issue_prescription(self, patient:Patient):
         '''prescribe a drug
         
         Args:
@@ -62,5 +54,11 @@ class Doctor(HealthcareProfessional):
         Returns:
             str: name of the drug
         '''
-        return self._drug_names[random.randint(0, len(self._drug_names)-1)]
+        from .prescription import Prescription
+        drug = self._pick_random(self._type)
+        dosage = self._pick_random(self._dosages)
+        frequency = self._pick_random(self._frequency)
+        return Prescription(drug, patient, self, random.randint(1, 5), '{} {}'.format(dosage, frequency))
 
+    def _pick_random(self, values):
+        return values[random.randint(1, len(values)-1)]

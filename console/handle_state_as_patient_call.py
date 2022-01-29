@@ -27,7 +27,7 @@ class StateAsPatientCallHandler(StateAsPatientBaseHandler):
     def _have_a_call(self, user:Patient):
         receptionist = self._find_receptionist()
         if receptionist is None:
-            ConsoleUtility.print_error('The phone rings, but nobody is answering (did they hire a receptionist?)')  
+            ConsoleUtility.print_error('<The phone rings, but nobody is answering (did they hire a receptionist?)>')  
             return user
         else:
             return self._talk_with(receptionist, user)
@@ -42,7 +42,7 @@ class StateAsPatientCallHandler(StateAsPatientBaseHandler):
         return receptionist
 
     def _talk_with(self, receptionist:Receptionist, user:Patient):
-        ConsoleUtility.print_conversation('Clinic of Essex, this is {}, how can I help you?'.format(receptionist.name))
+        ConsoleUtility.print_conversation('Receptionist> Clinic of Essex, this is {}, how can I help you?'.format(receptionist.name))
         ConsoleUtility.print_option('I want to [R]egister as a patient')
         ConsoleUtility.print_option('I want to [M]ake an appointment')
         ConsoleUtility.print_option('I want to [C]ancel an appointment')
