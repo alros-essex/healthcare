@@ -35,6 +35,13 @@ class Storage:
                 address TEXT NOT NULL,
                 phone TEXT NOT NULL)''',
                 {})
+            self._execute('''CREATE TABLE appointments(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                type TEXT NOT NULL,
+                staff_id INTEGER NOT NULL,
+                patient_id INTEGER NOT NULL,
+                date INTEGER NOT NULL)''',
+                {})
 
     def select_employee(self, role:EmployeeRole = None, employee_number:str = None) -> Employee:
         clause , params = self._select_employee_build_params(role, employee_number)
