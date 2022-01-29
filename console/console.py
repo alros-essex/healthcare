@@ -1,6 +1,8 @@
 from colorama import Fore, Back, Style
+from healthcare.appointment_schedule import AppointmentSchedule
 
-from healthcare.clinic import Clinic
+from healthcare.storage import Storage
+
 from console.state import State
 
 from .handle_state_as_patient import StateAsPatientHandler
@@ -25,31 +27,31 @@ LOG = '@log'
 
 class Console():
 
-    def __init__(self, quick:bool=False):
+    def __init__(self, storage:Storage, schedule:AppointmentSchedule, quick:bool=False):
         self._quick = quick
         self._handlers = {}
-        self._handlers[State.CONNECTED] = StateConnectedHandler()
+        self._handlers[State.CONNECTED] = StateConnectedHandler(storage)
         self._handlers[State.MANAGE_EMPLOYEES] = StateManageEmployee()
-        self._handlers[State.MANAGE_DOCTORS] = StateManageDoctors()
-        self._handlers[State.HIRE_A_DOCTOR] = StateHireDoctor()
-        self._handlers[State.FIRE_A_DOCTOR] = StateFireDoctor()
-        self._handlers[State.MANAGE_NURSES] = StateManageNurses()
-        self._handlers[State.HIRE_A_NURSE] = StateHireNurse()
-        self._handlers[State.FIRE_A_NURSE] = StateFireNurse()
-        self._handlers[State.MANAGE_RECEPTIONISTS] = StateManageReceptionists()
-        self._handlers[State.HIRE_A_RECEPTIONIST] = StateHireReceptionist()
-        self._handlers[State.FIRE_A_RECEPTIONIST] = StateFireReceptionist()
-        self._handlers[State.MANAGE_PATIENTS] = StateManagePatients()
-        self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler()
-        self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler(quick=quick)
-        self._handlers[State.AS_A_PATIENT_GO] = StateAsPatientGoHandler(quick=quick)
-        self._handlers[State.VIEW_APPOINTMENTS] = StateViewAppointmentsHandler()
+        self._handlers[State.MANAGE_DOCTORS] = StateManageDoctors(storage)
+        self._handlers[State.HIRE_A_DOCTOR] = StateHireDoctor(storage)
+        self._handlers[State.FIRE_A_DOCTOR] = StateFireDoctor(storage)
+        self._handlers[State.MANAGE_NURSES] = StateManageNurses(storage)
+        self._handlers[State.HIRE_A_NURSE] = StateHireNurse(storage)
+        self._handlers[State.FIRE_A_NURSE] = StateFireNurse(storage)
+        self._handlers[State.MANAGE_RECEPTIONISTS] = StateManageReceptionists(storage)
+        self._handlers[State.HIRE_A_RECEPTIONIST] = StateHireReceptionist(storage)
+        self._handlers[State.FIRE_A_RECEPTIONIST] = StateFireReceptionist(storage)
+        self._handlers[State.MANAGE_PATIENTS] = StateManagePatients(storage)
+        self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler(storage)
+        self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler(storage, schedule, quick=quick)
+        self._handlers[State.AS_A_PATIENT_GO] = StateAsPatientGoHandler(storage, schedule, quick=quick)
+        self._handlers[State.VIEW_APPOINTMENTS] = StateViewAppointmentsHandler(storage, schedule)
 
-    def loop(self, clinic:Clinic):
+    def loop(self):
         self._state = State.CONNECTED
         context = {}
         while self._state != State.QUIT:
-            self._state = self._handlers[self._state].handle(clinic, context)
+            self._state = self._handlers[self._state].handle(context)
   
 
     def print_formatted(self, output):

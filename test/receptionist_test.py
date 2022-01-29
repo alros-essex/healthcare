@@ -1,6 +1,5 @@
 from datetime import datetime
 import unittest
-from healthcare.clinic import Clinic
 from healthcare.doctor import Doctor
 from healthcare.nurse import Nurse
 from healthcare.receptionist import Receptionist

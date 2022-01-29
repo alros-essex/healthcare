@@ -2,10 +2,11 @@ from datetime import datetime
 import enum
 import random
 from healthcare.appointment import Appointment
+from healthcare.appointment_schedule import AppointmentSchedule
 from healthcare.healthcare_professional import HealthcareProfessional
 
+from healthcare.storage import Storage
 from healthcare.patient import Patient
-from healthcare.clinic import Clinic
 from console.state import State
 from healthcare.receptionist import Receptionist
 
@@ -15,33 +16,39 @@ from .handle_state_as_patient_base import StateAsPatientBaseHandler
 
 class StateAsPatientGoHandler(StateAsPatientBaseHandler):
 
-    def __init__(self, quick: bool = False):
-        super().__init__(quick=quick)
+    def __init__(self, storage:Storage, schedule:AppointmentSchedule, quick: bool = False):
+        super().__init__(storage, quick=quick)
+        self._storage = storage
+        self._schedule = schedule
 
-    def handle(self, clinic:Clinic, context:dict):
-        receptionist = self._find_a_receptionist(clinic)
+    def handle(self, context:dict):
+        receptionist = self._find_a_receptionist()
         justId = False
         if receptionist is not None:
             loop = True
             while loop:
-                user, loop = self._talk_with_receptionist(clinic, receptionist, context, justId)
+                user, loop = self._talk_with_receptionist(receptionist, context, justId)
                 context['user'] = user
                 justId = True
         return State.AS_A_PATIENT_GO
 
-    def _find_a_receptionist(self, clinic:Clinic):
-        if len(clinic.receptionists) == 0:
+    def _find_a_receptionist(self):
+        receptionists = self._storage.select_receptionists()
+        if len(receptionists) == 0:
             ConsoleUtility.print_light('it looks like nobody works here (Clinic must hire at least one receptionist)')
             return None
-        return clinic.receptionists[random.randint(0, len(clinic.receptionists)-1)]
+        receptionist:Receptionist = receptionists[random.randint(0, len(receptionists)-1)]
+        receptionist.connect_to_schedule(self._schedule)
+        receptionist.connect_to_storage(self._storage)
+        return receptionist
 
-    def _talk_with_receptionist(self, clinic:Clinic, receptionist:Receptionist, context, justId:bool):
+    def _talk_with_receptionist(self, receptionist:Receptionist, context, justId:bool):
         user:Patient = context.get('user')
         if not justId:
-            patient = self._front_desk_identity_user(clinic, receptionist, user)
+            patient = self._front_desk_identity_user(receptionist, user)
         else:
             patient = user
-        appointments = self._print_appointments(clinic, receptionist, patient)
+        appointments = self._print_appointments(receptionist, patient)
         context['appointment'] = appointments
         self._pause()
         ConsoleUtility.print_conversation('How can I help you{}?'.format(' now' if justId else ''))
@@ -52,18 +59,18 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
         ConsoleUtility.print_option('[G]o away')
         input = ConsoleUtility.prompt_user_for_input(options=['M','S','C','G'])
         if input == 'M':
-            self._make_an_appointment(clinic, receptionist, user=patient)
+            self._make_an_appointment(receptionist, user=patient)
             return patient, True
         elif input == 'S':
-            self._see_staff(clinic, patient, appointments[0])
+            self._see_staff(receptionist, patient, appointments[0])
             return patient, True
         elif input == 'C':
-            self._cancel_an_appointment(clinic, receptionist, patient=patient)
+            self._cancel_an_appointment(receptionist, patient=patient)
             return patient, True
         else:
             return patient, False
 
-    def _front_desk_identity_user(self, clinic:Clinic, receptionist:Receptionist, user:Patient) -> Patient:
+    def _front_desk_identity_user(self, receptionist:Receptionist, user:Patient) -> Patient:
         if user is not None:
             # handle configuration
             ConsoleUtility.print_conversation('Can I help you?')
@@ -81,14 +88,14 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
             surname = ConsoleUtility.prompt_user_for_input()
             ConsoleUtility.print_conversation('...and your first name?')
             name = ConsoleUtility.prompt_user_for_input()
-        patient = receptionist.lookup_patient(clinic, name, surname)
+        patient = receptionist.lookup_patient(name, surname)
         if patient is None:
             ConsoleUtility.print_conversation('You are not yet in the system, I need to register you as a patient')
             self._pause()
-            patient = self._register_new_patient(clinic, receptionist, name = name, surname = surname, patient=user)
+            patient = self._register_new_patient(receptionist, name = name, surname = surname, patient=user)
         return patient
 
-    def _see_staff(self, clinic:Clinic, patient:Patient, appointment:Appointment):
+    def _see_staff(self, receptionist:Receptionist, patient:Patient, appointment:Appointment):
         ConsoleUtility.print_conversation('Hi, I am {} {}'.format(appointment.staff.role, appointment.staff.name))
         self._pause()
         ConsoleUtility.print_conversation('Let\'s start the consultation...')
@@ -105,11 +112,10 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
                 ConsoleUtility.print_conversation('Here\'s your prescription: {}'.format(prescription))
                 self._pause()
                 ConsoleUtility.print_light('Thank you')
-                clinic.register_prescription(patient, appointment.staff, prescription)
         ConsoleUtility.print_conversation('Take care.')
         self._pause()
         ConsoleUtility.print_light('Bye')
-        clinic.appointment_schedule.cancel_appoitment(appointment)
+        receptionist.cancel_appointment(appointment)
 
     def _can_issue_prescription(self, staff:HealthcareProfessional) -> bool:
         return hasattr(staff, 'issue_prescription') and callable(getattr(staff, 'issue_prescription'))

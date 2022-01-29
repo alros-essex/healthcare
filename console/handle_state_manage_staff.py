@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from healthcare.clinic import Clinic
+from healthcare.storage import Storage
 from console.state import State
 
 from .console_utility import ConsoleUtility
@@ -14,14 +14,14 @@ class StateManageStaff(StateHandler, ABC):
         self._next_state['F'] = state_fire
         self._next_state['B']=State.MANAGE_EMPLOYEES
 
-    def handle(self, clinic:Clinic, context:dict):
-        self._print_status(clinic)
+    def handle(self, context:dict):
+        self._print_status()
         self._print_options()
         return self._next_state[self._get_user_choice()]
 
-    def _print_status(self, clinic:Clinic):
+    def _print_status(self):
         ConsoleUtility.print_light('{} MENU'.format(self._type.upper()))
-        for staff in self._get_managed_staff(clinic):
+        for staff in self._get_managed_staff():
             ConsoleUtility.print_light('- {}'.format(staff))
 
     def _print_options(self):

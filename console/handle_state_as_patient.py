@@ -1,4 +1,3 @@
-from healthcare.clinic import Clinic
 from console.state import State
 
 from .console_utility import ConsoleUtility
@@ -6,13 +5,13 @@ from .handle_state import StateHandler
 
 class StateAsPatientHandler(StateHandler):
     
-    def __init__(self):
+    def __init__(self, _):
         self._next_state = {}
         self._next_state['C']=State.AS_A_PATIENT_CALL
         self._next_state['G']=State.AS_A_PATIENT_GO
         self._next_state['B']=State.CONNECTED
 
-    def handle(self, clinic:Clinic, context:dict):
+    def handle(self, context:dict):
         self._print_options()
         return self._next_state[self._get_user_choice()]
 

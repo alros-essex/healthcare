@@ -1,6 +1,7 @@
 from .init_hiring_staff import InitHiringStaff
 
 from healthcare.receptionist import Receptionist
+from healthcare.appointment_schedule import AppointmentSchedule
 
 class InitReceptionists(InitHiringStaff):
     def _get_type_of_staff(self):

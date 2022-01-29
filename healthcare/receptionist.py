@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
-from healthcare import appointment_type
 
 from .appointment_schedule import AppointmentSchedule
 from .appointment_type import AppointmentType
 from .appointment import Appointment
 from .healthcare_professional import HealthcareProfessional
+from .storage import Storage
 from .employee import Employee
 from .employee_role import EmployeeRole
 from .patient import Patient
@@ -12,33 +12,49 @@ from .patient import Patient
 
 class Receptionist(Employee):
 
-    def __init__(self, name: str, employee_number: str):
+    def __init__(self, name: str, employee_number: str, schedule:AppointmentSchedule = None, storage:Storage = None):
         super().__init__(name, employee_number)
+        self._schedule = schedule
+        self._storage = storage
 
     @property
-    def role(self):
+    def role(self) -> EmployeeRole:
         return EmployeeRole.RECEPTIONIST
 
-    def make_appointment(self, schedule:AppointmentSchedule, staff:HealthcareProfessional, patient:Patient, time:datetime, urgent:bool):
+    # TODO try to remove it
+    def connect_to_schedule(self, schedule:AppointmentSchedule) -> None:
+        self._schedule = schedule
+    
+    # TODO try to remove it
+    def connect_to_storage(self, storage:Storage) -> None:
+        self._storage = storage
+
+    def make_appointment(self,  staff:HealthcareProfessional, patient:Patient, time:datetime, urgent:bool):
         appointment_type = AppointmentType.URGENT if urgent else AppointmentType.NORMAL
-        schedule.add_appoitment(Appointment(appointment_type, staff, patient, time))
+        self._schedule.add_appoitment(Appointment(appointment_type, staff, patient, time))
 
-    def cancel_appointment(self, schedule:AppointmentSchedule, appointment:Appointment):
-        schedule.cancel_appoitment(appointment)
+    def cancel_appointment(self, appointment:Appointment):
+        self._schedule.cancel_appoitment(appointment)
 
-    def lookup_patient(self, clinic, name:str, surname:str):
-        return next(filter(lambda p: ', '.join([surname, name]) == p.name,clinic.patients), None)
+    def lookup_patient(self, first_name:str, surname:str) -> Patient:
+        return self._storage.select_patient(first_name=first_name, surname=surname)
 
-    def register_patient(self, clinic, patient:Patient):
-        clinic.register_patient(patient)
+    def register_patient(self, patient:Patient):
+        self._storage.insert_patient(patient)
 
-    def find_next_free_timeslot(self, schedule:AppointmentSchedule, professional:HealthcareProfessional, urgent:bool, initial:datetime):
+    def find_next_free_timeslot(self, professional:HealthcareProfessional, urgent:bool, initial:datetime):
         starting = self._round_initial_time(initial)
-        appointments = schedule.find_appoitment(filter_professional=professional)[0] #being just one professional I have only 1 result
+        appointments = self._appointments_as_dict(self._schedule.find_appoitment(filter_professional=professional))
         return self._find_next_slot(appointments, urgent, starting)
 
-    def find_patient_appointments(self, schedule:AppointmentSchedule, patient:Patient):
-        return schedule.find_appoitment(filter_patient=patient, flatten=True)
+    def _appointments_as_dict(self, appointments):
+        indexed = {}
+        for appointment in appointments:
+            indexed[appointment.date] = appointment
+        return indexed
+
+    def find_patient_appointments(self, patient:Patient):
+        return self._schedule.find_appoitment(filter_patient=patient)
 
     def _round_initial_time(self, initial:datetime):
         if initial.minute != 0 and initial.minute != 30:
@@ -50,10 +66,10 @@ class Receptionist(Employee):
         time_slot = self._next_slot(urgent, starting)
         empty_slot = None
         while empty_slot is None:
-            if appointments[time_slot] is None:
-                empty_slot = time_slot
-            else:
+            if time_slot in appointments:
                 time_slot = self._next_slot(urgent, time_slot)
+            else:
+                empty_slot = time_slot
         return empty_slot
 
     def _next_slot(self, urgent:bool, starting:datetime) -> datetime:

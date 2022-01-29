@@ -1,10 +1,9 @@
 from abc import ABC
 from datetime import datetime
 import time
-from healthcare import appointment
+from healthcare.storage import Storage
 
 from healthcare.patient import Patient
-from healthcare.clinic import Clinic
 from console.state import State
 from healthcare.receptionist import Receptionist
 
@@ -13,10 +12,11 @@ from .handle_state import StateHandler
 
 class StateAsPatientBaseHandler(StateHandler, ABC):
 
-    def __init__(self, quick:bool=False):
+    def __init__(self, storage:Storage, quick:bool=False):
         self._quick = quick
+        self._storage = storage
 
-    def _register_new_patient(self, clinic:Clinic, receptionist:Receptionist, name = None, surname = None, patient:Patient=None):
+    def _register_new_patient(self, receptionist:Receptionist, name = None, surname = None, patient:Patient=None):
         if patient is None:
             patient = self._identify_user(name, surname)
         else:
@@ -27,7 +27,7 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
             self._pause()
             ConsoleUtility.print_conversation('I see... {}'.format(patient))
             self._pause()
-        receptionist.register_patient(clinic, patient)
+        receptionist.register_patient(patient)
         ConsoleUtility.print_conversation('Thank you, now you are one of our patients')
         return patient
 
@@ -52,7 +52,7 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
         phone = ConsoleUtility.prompt_user_for_input()
         return Patient(name, surname, address, phone)
 
-    def _make_an_appointment(self, clinic:Clinic, receptionist:Receptionist, user:Patient, surname = None, name = None):
+    def _make_an_appointment(self, receptionist:Receptionist, user:Patient, surname = None, name = None):
         if user is None:
             if surname is None:
                 ConsoleUtility.print_conversation('Can I have your surname, please?')
@@ -66,18 +66,18 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
             surname = user.surname
         ConsoleUtility.print_conversation('Let me check in the system.')
         self._pause()
-        patient = receptionist.lookup_patient(clinic, name, surname)
+        patient = receptionist.lookup_patient(name, surname)
         if patient == None:
             ConsoleUtility.print_conversation('You are not yet in the system, I need to register you as a patient')
-            patient = self._register_new_patient(clinic, receptionist, name, surname)
+            patient = self._register_new_patient(receptionist, name, surname)
         ConsoleUtility.print_conversation('With whom do you need an appointment?')
         index = 0
         options = []
-        for doctor in clinic.doctors:
+        for doctor in self._storage.select_doctors():
             options.append(doctor)
             ConsoleUtility.print_option('[{}] Doctor {}'.format(index +1, doctor.name))
             index = index + 1
-        for nurse in clinic.nurses:
+        for nurse in self._storage.select_nurses():
             options.append(nurse)
             ConsoleUtility.print_option('[{}] Nurse {}'.format(index + 1, nurse.name))
             index = index + 1
@@ -89,27 +89,27 @@ class StateAsPatientBaseHandler(StateHandler, ABC):
         accepted = False
         next_timeslot = datetime.now()
         while not accepted:
-            next_timeslot = receptionist.find_next_free_timeslot(clinic.appointment_schedule, staff, urgent, next_timeslot)
+            next_timeslot = receptionist.find_next_free_timeslot(staff, urgent, next_timeslot)
             ConsoleUtility.print_conversation('{} would be ok for you?'.format(next_timeslot))
             ConsoleUtility.print_option('[Y]es')
             ConsoleUtility.print_option('[N]o')
             accepted = ConsoleUtility.prompt_user_for_input(['Y', 'N']) == 'Y'
-        receptionist.make_appointment(clinic.appointment_schedule, staff, patient, next_timeslot, urgent)
+        receptionist.make_appointment(staff, patient, next_timeslot, urgent)
         ConsoleUtility.print_conversation('Thank you, the appointment has been registered')
 
-    def _cancel_an_appointment(self, clinic:Clinic, receptionist:Receptionist, patient:Patient):
-        appointments = self._print_appointments(clinic, receptionist, patient)
+    def _cancel_an_appointment(self, receptionist:Receptionist, patient:Patient):
+        appointments = self._print_appointments(receptionist, patient)
         ConsoleUtility.print_conversation('Which one do you want to cancel?')
         input = ConsoleUtility.prompt_user_for_input(options = [str(o) for o in range(1, len(appointments)+1)])
         appointment = appointments[int(input)-1]
-        receptionist.cancel_appointment(clinic.appointment_schedule, appointment)
+        receptionist.cancel_appointment(appointment)
         ConsoleUtility.print_conversation('The appointment {} has been cancelled'.format(appointment))
 
-    def _find_next_appointment(self, clinic:Clinic, receptionist:Receptionist, patient:Patient):
-        receptionist.find_patient_appointments(clinic.appointment_schedule, patient)
+    def _find_next_appointment(self, receptionist:Receptionist, patient:Patient):
+        receptionist.find_patient_appointments(patient)
 
-    def _print_appointments(self, clinic, receptionist, patient):
-        appointments = receptionist.find_patient_appointments(clinic.appointment_schedule, patient)
+    def _print_appointments(self, receptionist:Receptionist, patient:Patient):
+        appointments = receptionist.find_patient_appointments(patient)
         ConsoleUtility.print_conversation('Currently, you have {} appointment{}'.format(len(appointments),'s' if len(appointments)>1 else ''))
         for idx, appointment in enumerate(appointments):
             ConsoleUtility.print_light('{} with {}'.format(idx+1, appointment.date, appointment.staff))

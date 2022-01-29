@@ -1,30 +1,29 @@
 from collections import defaultdict
-from datetime import date, datetime, time, timedelta
-
-from healthcare.patient import Patient
-
-from .appointment import Appointment
-from .healthcare_professional import HealthcareProfessional
-from healthcare import appointment
-
+from datetime import date
 
 class AppointmentSchedule():
     """
     Represents the schedule of the appointments
     """
-    def __init__(self):
+    from .storage import Storage
+    from .patient import Patient
+    from .appointment import Appointment
+    from .healthcare_professional import HealthcareProfessional
+
+    def __init__(self, storage:Storage):
         """creates the instance
         
         Args:
-            None
+            storage: db instance
         Returns:
             None
         """
-        self._appoitments = defaultdict(lambda: defaultdict(lambda: None))
+        self._storage = storage
+        # self._appoitments = defaultdict(lambda: defaultdict(lambda: None))
 
     @property
     def appointments(self):
-        return self._appoitments
+        return self._storage.select_appointments()
 
     def add_appoitment(self, appointment:Appointment):
         """creates an appoitment
@@ -34,7 +33,8 @@ class AppointmentSchedule():
         Returns:
             None
         """
-        self._appoitments[appointment.staff.employee_number][appointment.date]=appointment
+        self._storage.insert_appointment(appointment)
+        #self._appoitments[appointment.staff.employee_number][appointment.date]=appointment
 
     def cancel_appoitment(self, appointment:Appointment):
         """deletes an appoitment
@@ -44,10 +44,11 @@ class AppointmentSchedule():
         Returns:
             None
         """
-        self._appoitments[appointment.staff.employee_number].pop(appointment.date)
+        self._storage.delete_appointment(appointment)
+        # self._appoitments[appointment.staff.employee_number].pop(appointment.date)
 
     def find_appoitment(self, filter_professional:HealthcareProfessional=None, 
-        filter_professionals=[], filter_date:date=None, filter_patient:Patient=None, flatten:bool = False):
+        filter_professionals=[], filter_date:date=None, filter_patient:Patient=None):
         """finds an appoitment
         
         Args:
@@ -58,20 +59,8 @@ class AppointmentSchedule():
         Returns:
             Appointment: dict of professional -> (dict of date -> appoitment)
         """
-        appointments = []
-        if filter_professional is not None or len(filter_professionals)>0:
-            employee_numbers_to_consider = [p.employee_number for p in self._merge_professional_filters(filter_professional, filter_professionals)]
-        else:
-            employee_numbers_to_consider = list(self._appoitments.keys())
-
-        for employee_number in employee_numbers_to_consider:
-            app = self._appoitments[employee_number]
-            if filter_date is not None:
-                app = self._filter_by_date(app, filter_date)
-            if filter_patient is not None:
-                app = self._filter_by_patient(app, filter_patient)
-            appointments.append(app)
-        return self._flatten(appointments) if flatten else appointments
+        employee_numbers_to_consider = [p.employee_number for p in self._merge_professional_filters(filter_professional, filter_professionals)] if filter_professional is not None or len(filter_professionals)>0 else None
+        return self._storage.select_appointments(filter_patient=filter_patient, filter_employee_numbers=employee_numbers_to_consider, filter_date = filter_date)
 
     def _merge_professional_filters(self, filter_professional:HealthcareProfessional, filter_professionals):
         filter = []
@@ -79,7 +68,9 @@ class AppointmentSchedule():
             filter.append(filter_professional)
         filter = filter + filter_professionals
         return filter
-        
+
+    '''
+    
     def _filter_by_date(self, professional_appointments, filter_date:date):
         return {k: v for k, v in professional_appointments.items() if v.is_on(filter_date)}
 
@@ -88,3 +79,5 @@ class AppointmentSchedule():
 
     def _flatten(self, appoitments):
         return [app for cal in appoitments for k,app in cal.items() if app is not None]
+
+    ''' 
