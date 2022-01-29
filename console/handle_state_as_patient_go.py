@@ -30,7 +30,7 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
                 user, loop = self._talk_with_receptionist(receptionist, context, justId)
                 context['user'] = user
                 justId = True
-        return State.AS_A_PATIENT_GO
+        return State.CONNECTED
 
     def _find_a_receptionist(self):
         receptionists = self._storage.select_receptionists()
@@ -96,7 +96,7 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
         return patient
 
     def _see_staff(self, receptionist:Receptionist, patient:Patient, appointment:Appointment):
-        ConsoleUtility.print_conversation('Hi, I am {} {}'.format(appointment.staff.role, appointment.staff.name))
+        ConsoleUtility.print_conversation('Hi, I am {} {}'.format(appointment.staff.role.value, appointment.staff.name))
         self._pause()
         ConsoleUtility.print_conversation('Let\'s start the consultation...')
         for i in range(0,3):

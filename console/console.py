@@ -10,16 +10,12 @@ from .handle_state_as_patient_call import StateAsPatientCallHandler
 from .handle_state_as_patient_go import StateAsPatientGoHandler
 from .handle_state_connected import StateConnectedHandler
 from .handle_state_hire_a_doctor import StateHireDoctor
-from .handle_state_fire_a_doctor import StateFireDoctor
 from .handle_state_manage_doctors import StateManageDoctors
 from .handle_state_manage_employee import StateManageEmployee
 from .handle_state_manage_patients import StateManagePatients
-from .handle_state_manage_staff import StateManageStaff
 from .handle_state_hire_a_nurse import StateHireNurse
-from .handle_state_fire_a_nurse import StateFireNurse
 from .handle_state_manage_nurses import StateManageNurses
 from .handle_state_hire_a_receptionist import StateHireReceptionist
-from .handle_state_fire_a_receptionist import StateFireReceptionist
 from .handle_state_manage_receptionists import StateManageReceptionists
 from .handle_state_view_appointments import StateViewAppointmentsHandler
 
@@ -34,13 +30,10 @@ class Console():
         self._handlers[State.MANAGE_EMPLOYEES] = StateManageEmployee()
         self._handlers[State.MANAGE_DOCTORS] = StateManageDoctors(storage)
         self._handlers[State.HIRE_A_DOCTOR] = StateHireDoctor(storage)
-        self._handlers[State.FIRE_A_DOCTOR] = StateFireDoctor(storage)
         self._handlers[State.MANAGE_NURSES] = StateManageNurses(storage)
         self._handlers[State.HIRE_A_NURSE] = StateHireNurse(storage)
-        self._handlers[State.FIRE_A_NURSE] = StateFireNurse(storage)
         self._handlers[State.MANAGE_RECEPTIONISTS] = StateManageReceptionists(storage)
         self._handlers[State.HIRE_A_RECEPTIONIST] = StateHireReceptionist(storage)
-        self._handlers[State.FIRE_A_RECEPTIONIST] = StateFireReceptionist(storage)
         self._handlers[State.MANAGE_PATIENTS] = StateManagePatients(storage)
         self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler(storage)
         self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler(storage, schedule, quick=quick)

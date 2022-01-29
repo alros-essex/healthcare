@@ -1,6 +1,9 @@
 from enum import Enum
 
 class EmployeeRole(Enum):
-    RECEPTIONIST = 'RECEPTIONIST'
-    DOCTOR = 'DOCTOR'
-    NURSE = 'NURSE'
+    RECEPTIONIST = 'Receptionist'
+    DOCTOR = 'Doctor'
+    NURSE = 'Nurse'
+
+    def pretty_print(self):
+        pass

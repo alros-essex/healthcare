@@ -56,7 +56,7 @@ class Storage():
 
     def insert_employee(self, employee:Employee):
         self._execute('INSERT INTO employees(name, employee_number, role) VALUES(:name, :employee_number, :role)',
-            { 'name': employee.name, 'employee_number': employee.employee_number, 'role': employee.role.value })
+            { 'name': employee.name, 'employee_number': employee.employee_number, 'role': employee.role.name })
     
     def select_doctors(self, employee_number:str = None):
         return self.select_employee(role = EmployeeRole.DOCTOR)
@@ -109,6 +109,10 @@ class Storage():
             appointments.append(Appointment(AppointmentType[row[0]], self._to_employee(row[2:5]), self._to_patient(row[5:9]), datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")))
         return appointments
 
+    def select_appointment_dates(self):
+        cur = self._execute('select DISTINCT STRFTIME("%d-%m-%Y", date) from appointments',{})
+        return [d[0] for d in cur.fetchall()]
+
     def _build_filter_employee_numbers(self, filter_employee_numbers = []):
         return '' if filter_employee_numbers is None else 'and e.employee_number IN ({})'.format(','.join(f'"{f}"' for f in filter_employee_numbers))
 
@@ -141,7 +145,7 @@ class Storage():
         params = {}
         if role is not None:
             clause = ' where role = :role'
-            params['role'] = role.value
+            params['role'] = role.name
         if employee_number is not None:
             clause = (' where ' if clause is None else ' and ') + 'employee_number = :employee_number'
             params['employee_number'] = employee_number

@@ -7,7 +7,7 @@ from .handle_state_manage_staff import StateManageStaff
 class StateManageNurses(StateManageStaff):
 
     def __init__(self, storage:Storage):
-        super().__init__(Nurse, State.HIRE_A_NURSE, State.FIRE_A_NURSE)
+        super().__init__(Nurse, State.HIRE_A_NURSE)
         self._storage = storage
 
     def _get_managed_staff(self):
