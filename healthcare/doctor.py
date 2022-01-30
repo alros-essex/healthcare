@@ -41,7 +41,7 @@ class Doctor(HealthcareProfessional):
         Returns:
             str: result of the consultation
         """
-        return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.firstname+' '+patient.surname)
+        return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.name)
 
     # possible parameters of a prescription
     _frequency = ['once a day','once a week','every two days','before meals']

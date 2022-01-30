@@ -12,7 +12,7 @@ class StateConnectedHandler(StateHandler):
         self._next_state['E']=State.MANAGE_EMPLOYEES
         self._next_state['P']=State.MANAGE_PATIENTS
         self._next_state['A']=State.VIEW_APPOINTMENTS
-        self._next_state['T']=State.AS_A_PATIENT
+        self._next_state['T']=State.AS_A_PATIENT_GO
         self._next_state['Q']=State.QUIT
 
     def handle(self, context:dict):

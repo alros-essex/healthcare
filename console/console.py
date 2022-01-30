@@ -5,8 +5,6 @@ from healthcare.storage import Storage
 
 from console.state import State
 
-from .handle_state_as_patient import StateAsPatientHandler
-from .handle_state_as_patient_call import StateAsPatientCallHandler
 from .handle_state_as_patient_go import StateAsPatientGoHandler
 from .handle_state_connected import StateConnectedHandler
 from .handle_state_hire_a_doctor import StateHireDoctor
@@ -35,8 +33,6 @@ class Console():
         self._handlers[State.MANAGE_RECEPTIONISTS] = StateManageReceptionists(storage)
         self._handlers[State.HIRE_A_RECEPTIONIST] = StateHireReceptionist(storage)
         self._handlers[State.MANAGE_PATIENTS] = StateManagePatients(storage)
-        self._handlers[State.AS_A_PATIENT] = StateAsPatientHandler(storage)
-        self._handlers[State.AS_A_PATIENT_CALL] = StateAsPatientCallHandler(storage, schedule, quick=quick)
         self._handlers[State.AS_A_PATIENT_GO] = StateAsPatientGoHandler(storage, schedule, quick=quick)
         self._handlers[State.VIEW_APPOINTMENTS] = StateViewAppointmentsHandler(storage, schedule)
 
