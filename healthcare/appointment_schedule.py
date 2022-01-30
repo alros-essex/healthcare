@@ -64,7 +64,7 @@ class AppointmentSchedule():
             Appointment (not saved)
         """
         starting = self._round_initial_time(initial)
-        appointments = self._appointments_as_dict(self.find_appoitments(filter_professional=professional))
+        appointments = self._appointments_as_dict(self.find_appointments(filter_professional=professional))
         slot = self._find_next_slot(appointments, urgent, starting)
         return Appointment(type = AppointmentType.URGENT if urgent else AppointmentType.NORMAL,
             staff = professional, patient = patient, date = slot)
@@ -182,7 +182,7 @@ class AppointmentSchedule():
         # sorry... this clinic is closed in the weekends!
         return opening if opening.weekday()<5 else opening + timedelta(days=7-opening.weekday())
 
-    def find_appoitments(self, filter_professional:HealthcareProfessional=None, 
+    def find_appointments(self, filter_professional:HealthcareProfessional=None, 
         filter_professionals=[], filter_date:date=None, filter_patient:Patient=None):
         """finds an appoitment
         

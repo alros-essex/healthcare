@@ -1,9 +1,7 @@
 import random
-from enum import Enum
-
 from .employee_role import EmployeeRole
 from .healthcare_professional import HealthcareProfessional
-from .patient import Patient
+from .storage import Storage
 
 class Doctor(HealthcareProfessional):
     """
@@ -20,6 +18,9 @@ class Doctor(HealthcareProfessional):
         """
         super().__init__(name, employee_number, EmployeeRole.DOCTOR)
 
+    def connect_to_storage(self, storage:Storage):
+        self._storage = storage
+
     # possible results of the consultations
     _consultation_results = [
         'Medical history and symptoms of {} were evaluated',
@@ -33,22 +34,23 @@ class Doctor(HealthcareProfessional):
         'Gave good news to {}'
     ]
 
-    def consultation(self, patient:Patient) -> str:
+    def consultation(self, patient) -> str:
         """conducts a consultation
         
         Args:
-            patient: patient
+            patient: Patient
         Returns:
             str: result of the consultation
         """
+        if len(patient.prescriptions)==0 or random.randint(1,2)==1:
+            prescription = self.issue_prescription(patient)
+            return 'Gave a prescription of {}'.format(prescription)
         return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.name)
 
-    # possible parameters of a prescription
-    _frequency = ['once a day','once a week','every two days','before meals']
-    _type = ['Javalin','Pythoxib','Kothlinax','Rubyonrailaxetate','Prologlin','Rustolin','Malbolgex']
-    _dosages = ['half pill','one pill','two pills']
+    # possible prescriptions
+    _type = ['Javalin','Pythonxib','Kothlinax','Rubyonrailaxetate','Prologlin','Rustolin','Malbolgex']
 
-    def issue_prescription(self, patient:Patient):
+    def issue_prescription(self, patient):
         """prescribe a drug
         
         Args:
@@ -57,7 +59,13 @@ class Doctor(HealthcareProfessional):
             Prescription
         """
         from .prescription import Prescription
-        drug = random.choice(self._type)
-        dosage = random.choice(self._dosages)
-        frequency = random.choice(self._frequency)
-        return Prescription(drug, patient, self, random.randint(1, 5), '{} {}'.format(dosage, frequency))
+        candidates = [d for d in self._type if d not in patient.prescriptions]
+        if len(candidates)==0:
+            # patients already has all possible prescriptions!
+            return None
+        prescription = Prescription(random.choice(candidates), patient, self, random.randint(1, 5), float(random.randint(100, 10000))/100)
+        patient.accept_prescription(prescription)
+        return prescription
+
+    def approve_repeat(self, prescription) -> bool:
+        return True

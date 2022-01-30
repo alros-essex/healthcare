@@ -1,3 +1,6 @@
+from healthcare.prescription import Prescription
+
+
 class Patient():
     """
     Models a patient of the clinic
@@ -15,7 +18,7 @@ class Patient():
         self._name = name
         self._address = address
         self._phone = phone
-        self._appointments = []
+        self._prescriptions = {}
 
     @property
     def name(self):
@@ -29,24 +32,20 @@ class Patient():
     def phone(self):
         return self._phone
 
-    @property
-    def appointments(self):
-        return self._appointments
-
-    def request_repeat(self, prescription):
-        from healthcare.prescription import Prescription
-        # TODO
-        pass
+    def request_repeat(self, doctor):
+        for p in self.prescriptions.values():
+            doctor.approve_repeat(p)
 
     def request_appointment(self) -> None:
         # TODO
         pass
 
-    def add_appointment(self, appointment) -> None:
-        self._appointments.append(appointment)
+    def accept_prescription(self, prescription:Prescription) -> None:
+        self._prescriptions[prescription.type] = prescription
 
-    def delete_appointment(self, appointment) -> None:
-        self._appointments.remove(appointment)
+    @property
+    def prescriptions(self):
+        return self._prescriptions
 
     def __lt__(self, other):
         return other is not None and self.name < other.name

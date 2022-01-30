@@ -4,6 +4,8 @@ from os.path import exists
 import sqlite3
 from datetime import date, timedelta
 
+from healthcare.prescription import Prescription
+
 from .appointment_type import AppointmentType
 
 from .appointment import Appointment
@@ -48,6 +50,30 @@ class Storage():
                 date INTEGER NOT NULL,
                 PRIMARY KEY(employee_number, patient_name, date))''',
                 {})
+            self._execute('''CREATE TABLE prescriptions(
+                type TEXT NOT NULL,
+                patient_name TEXT NOT NULL,
+                doctor_id TEXT NOT NULL,
+                quantity INTEGER NOT NULL,
+                dosage INTEGER NOT NULL,
+                PRIMARY KEY(type, patient_name, doctor_id))''',
+                {})
+
+    def select_prescriptions(self, patient:Patient):
+        cur = self._execute('''SELECT type, quantity, dosage
+            from prescriptions
+            where patient_name = :name''',
+            {'name': patient.name})
+        prescriptions = []
+        for row in cur.fetchall():
+            prescriptions.append(Prescription(row[0], patient, None, row[1], float(row[2])/100))
+        return prescriptions
+
+    def insert_prescription(self, prescription:Prescription):
+        self._execute('''INSERT INTO prescriptions(type, patient_name, doctor_id, quantity, dosage)
+            VALUES(:type, :name, :id, :quantity, :dosage)''',
+            {'type': prescription.type, 'name':prescription.patient.name, 'id': prescription.doctor.employee_number,
+            'quantity': prescription.quantity, 'dosage':prescription.dosage*100})
 
     def select_employee(self, role:EmployeeRole = None, employee_number:str = None):
         """finds all employees with the given filters
@@ -119,7 +145,8 @@ class Storage():
         rows = cur.fetchall()
         patients = []
         for row in rows:
-            patients.append(self._to_patient(row))
+            patient:Patient = self._to_patient(row)
+            patients.append(patient)
         return patients
 
     def select_patient(self, name:str) -> Patient:

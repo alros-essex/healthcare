@@ -28,7 +28,7 @@ class StateViewAppointmentsHandler(StateHandler):
             ConsoleUtility.print_light(date)
         ConsoleUtility.print_light('Please enter a date in format dd-mm-yyyy')
         input = ConsoleUtility.prompt_user_for_input(validation=lambda i: re.search("^\d{2}-\d{2}-\d{4}$", i) is not None )
-        appointment_calendars = self._schedule.find_appoitment(filter_date=self._parse_date(input))
+        appointment_calendars = self._schedule.find_appointments(filter_date=self._parse_date(input))
         for appointment_calendar in appointment_calendars:
             ConsoleUtility.print_light('- {}'.format(appointment_calendar))
 

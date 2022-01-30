@@ -32,7 +32,6 @@ class Receptionist(Employee):
     def role(self) -> EmployeeRole:
         return EmployeeRole.RECEPTIONIST
 
-    # TODO try to remove it
     def connect_to_schedule(self, schedule:AppointmentSchedule) -> None:
         """the receptionist needs access to the schedule to manage appointments
         
@@ -43,7 +42,6 @@ class Receptionist(Employee):
         """
         self._schedule = schedule
     
-    # TODO try to remove it
     def connect_to_storage(self, storage:Storage) -> None:
         """the receptionist needs access to the storage to manage the patients
         
@@ -63,7 +61,6 @@ class Receptionist(Employee):
             None
         """
         self._schedule.add_appoitment(appointment)
-        appointment.patient.add_appointment(appointment)
 
     def cancel_appointment(self, appointment:Appointment) -> None:
         """cancels an appointment
@@ -97,7 +94,7 @@ class Receptionist(Employee):
 
     # TODO remove
     def find_patient_appointments(self, patient:Patient):
-        return self._schedule.find_appoitments(filter_patient=patient)
+        return self._schedule.find_appointments(filter_patient=patient)
 
     def propose_appointment(self, professional:HealthcareProfessional, patient:Patient, urgent:bool, initial:datetime) -> Appointment:
         """creates a potential appointment

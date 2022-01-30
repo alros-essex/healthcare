@@ -1,17 +1,14 @@
-from .doctor import Doctor
-from .patient import Patient
-
 class Prescription():
     """
     Represents a prescription for a patient
     """
-    def __init__(self, type:str, patient:Patient, doctor:Doctor, quantity:int, dosage:str):
+    def __init__(self, type:str, patient, doctor, quantity:int, dosage:float):
         """creates the instance
         
         Args:
             type: type of the prescription
-            patient: patient receiving the prescription
-            doctor: doctor issuing the prescription
+            patient: Patient receiving the prescription
+            doctor: Doctor issuing the prescription
             quantity: amount
             dosage: how to dose it
         Returns:
@@ -40,7 +37,7 @@ class Prescription():
         return self._quantity
 
     @property
-    def dosage(self):
+    def dosage(self) -> float:
         return self._dosage
 
     def __str__(self) -> str:

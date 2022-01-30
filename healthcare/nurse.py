@@ -40,5 +40,5 @@ class Nurse(HealthcareProfessional):
         Returns:
             consultation result
         """
-        return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.firstname+' '+patient.surname)
+        return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.name)
     

@@ -23,16 +23,15 @@ class StateAsPatientGoHandler(StateHandler):
 
     def handle(self, context:dict):
         receptionist = self._find_a_receptionist()
-        justId = False
+        user = None
         if receptionist is not None:
             loop = True
             while loop:
-                user, loop = self._talk_with_receptionist(receptionist, context, justId)
-                context['user'] = user
-                justId = True
+                user, loop = self._talk_with_receptionist(receptionist, user)
         return State.CONNECTED
 
-    def _find_a_receptionist(self):
+    def _find_a_receptionist(self) -> Receptionist:
+        """utility method to find the first receptionist available"""
         receptionists = self._storage.select_receptionists()
         if len(receptionists) == 0:
             ConsoleUtility.print_light('<it looks like nobody works here (Clinic must hire at least one receptionist)>')
@@ -42,26 +41,23 @@ class StateAsPatientGoHandler(StateHandler):
         receptionist.connect_to_storage(self._storage)
         return receptionist
 
-    def _talk_with_receptionist(self, receptionist:Receptionist, context, justId:bool):
-        user:Patient = context.get('user')
-        if not justId:
-            patient = self._front_desk_identity_user(receptionist, user)
-        else:
-            patient = user
+    def _talk_with_receptionist(self, receptionist:Receptionist, patient:Patient): 
+        """workflow with the receptionist"""
+        if patient is None:
+            patient = self._front_desk_identity_user(receptionist)
         appointments = self._print_appointments(receptionist, patient)
-        context['appointment'] = appointments
         self._pause()
-        ConsoleUtility.print_conversation('Receptionist> How can I help you{}?'.format(' now' if justId else ''))
-        ConsoleUtility.print_option('[M]ake an appointment')
+        ConsoleUtility.print_conversation('Receptionist> How can I help you?')
+        ConsoleUtility.print_option('I want to [M]ake an appointment')
         if len(appointments) > 0:
-            ConsoleUtility.print_option('[S]ee a professional (next appointment)')
-            ConsoleUtility.print_option('[C]ancel appointment')
-        ConsoleUtility.print_option('[G]o away')
-        input = ConsoleUtility.prompt_user_for_input(options=['M','S','C','G'])
+            ConsoleUtility.print_option('I want to [G]o to my next appointment')
+            ConsoleUtility.print_option('I want to [C]ancel appointment')
+        ConsoleUtility.print_option('I [L]eave now, bye')
+        input = ConsoleUtility.prompt_user_for_input(options=['M','G','C','L'])
         if input == 'M':
-            self._make_an_appointment(receptionist, user=patient)
+            self._make_an_appointment(receptionist, patient)
             return patient, True
-        elif input == 'S':
+        elif input == 'G':
             self._see_staff(receptionist, patient, appointments[0])
             return patient, True
         elif input == 'C':
@@ -69,104 +65,29 @@ class StateAsPatientGoHandler(StateHandler):
             return patient, True
         else:
             return patient, False
-
-    def _front_desk_identity_user(self, receptionist:Receptionist, user:Patient) -> Patient:
-        if user is not None:
-            # handle configuration
-            ConsoleUtility.print_conversation('Receptionist> Can I help you?')
-            self._pause()
-            ConsoleUtility.print_light('you> My name is {}'.format(user))
-            self._pause()
-            name = user.firstname
-            surname = user.surname
-        else:
-            ConsoleUtility.print_conversation('Receptionist> Hello. Can I help you?')
-            self._pause()
-            ConsoleUtility.print_light('you> Hi, yes.')
-            self._pause()
-            ConsoleUtility.print_conversation('Receptionist> What\'s your name?')
-            name = ConsoleUtility.prompt_user_for_input()
+    
+    def _front_desk_identity_user(self, receptionist:Receptionist) -> Patient:
+        ConsoleUtility.print_conversation('Receptionist> Hello! Can I help you?')
+        self._pause()
+        ConsoleUtility.print_light('you> Hi, yes.')
+        self._pause()
+        ConsoleUtility.print_conversation('Receptionist> What\'s your name?')
+        name = ConsoleUtility.prompt_user_for_input()
         patient = receptionist.lookup_patient(name)
         if patient is None:
             ConsoleUtility.print_conversation('Receptionist> You are not yet in the system, I need to register you as a patient')
             self._pause()
-            patient = self._register_new_patient(receptionist, name = name, patient=user)
+            patient = self._register_new_patient(receptionist, name = name)
         return patient
 
-    def _see_staff(self, receptionist:Receptionist, patient:Patient, appointment:Appointment):
-        ConsoleUtility.print_conversation('{role}> Hi, I am {role} {name}'.format(
-            role = appointment.staff.role.value, name = appointment.staff.name))
-        self._pause()
-        ConsoleUtility.print_conversation('{}> Let\'s start the consultation...'.format(appointment.staff.role.value))
-        for i in range(0,3):
-            self._pause()
-            ConsoleUtility.print_conversation('{}> ...'.format(appointment.staff.role.value))
-        ConsoleUtility.print_light(appointment.staff.consultation(patient))
-        self._pause()
-        if self._can_issue_prescription(appointment.staff):
-            ConsoleUtility.print_conversation('{}> Do you need a prescription?'.format(appointment.staff.role.value))
-            input = ConsoleUtility.prompt_user_for_input(options=['Y','N'])
-            if input == 'Y':
-                prescription = appointment.staff.issue_prescription(patient)
-                ConsoleUtility.print_conversation('{role}> Here\'s your prescription: {prescription}'.format(
-                    role = appointment.staff.role.value, prescription = prescription))
-                self._pause()
-                ConsoleUtility.print_light('you> Thank you')
-        ConsoleUtility.print_conversation('{}> Take care.'.format(appointment.staff.role.value))
-        self._pause()
-        ConsoleUtility.print_light('you> Bye')
-        receptionist.cancel_appointment(appointment)
+    def _print_appointments(self, receptionist:Receptionist, patient:Patient):
+        appointments = receptionist.find_patient_appointments(patient)
+        ConsoleUtility.print_conversation('Receptionist> Currently, you have {} appointment{}'.format(len(appointments),'s' if len(appointments)>1 else ''))
+        for idx, appointment in enumerate(appointments):
+            ConsoleUtility.print_light('{} with {}'.format(idx+1, appointment.date, appointment.staff))
+        return appointments
 
-    def _can_issue_prescription(self, staff:HealthcareProfessional) -> bool:
-        return hasattr(staff, 'issue_prescription') and callable(getattr(staff, 'issue_prescription'))
-
-    def _register_new_patient(self, receptionist:Receptionist, name = None, patient:Patient=None):
-        if patient is None:
-            patient = self._identify_user(name)
-        else:
-            # handle prefilled configuration
-            ConsoleUtility.print_conversation('Receptionist> Do you have an id?') 
-            self._pause()
-            ConsoleUtility.print_light('you> Here it is!')
-            self._pause()
-            ConsoleUtility.print_conversation('Receptionist> I see... {}'.format(patient))
-            self._pause()
-        receptionist.register_patient(patient)
-        ConsoleUtility.print_conversation('Receptionist> Thank you, now you are one of our patients')
-        return patient
-
-    def _default_or_input(self, default):
-        if default is None:
-            return ConsoleUtility.prompt_user_for_input()
-        else:
-            ConsoleUtility.print_light(default)
-            return default
-
-    def _identify_user(self, name=None):
-        if name is None:
-            ConsoleUtility.print_conversation('Receptionist> Can I have your name, please?')
-            name = ConsoleUtility.prompt_user_for_input()
-        ConsoleUtility.print_conversation('Receptionist> What is your address?')
-        address = ConsoleUtility.prompt_user_for_input()
-        ConsoleUtility.print_conversation('Receptionist> What is your phone number?')
-        # TODO validation
-        phone = ConsoleUtility.prompt_user_for_input()
-        return Patient(name, address, phone)
-
-    def _make_an_appointment(self, receptionist:Receptionist, user:Patient, name = None):
-        if user is None:
-            if name is None:
-                ConsoleUtility.print_conversation('Receptionist> Can I have your name, please?')
-                name = ConsoleUtility.prompt_user_for_input()
-        else:
-            # handle prefilled configuration
-            name = user.name
-        ConsoleUtility.print_conversation('Receptionist> Let me check in the system.')
-        self._pause()
-        patient = receptionist.lookup_patient(name)
-        if patient == None:
-            ConsoleUtility.print_conversation('Receptionist> You are not yet in the system, I need to register you as a patient')
-            patient = self._register_new_patient(receptionist, name)
+    def _make_an_appointment(self, receptionist:Receptionist, patient:Patient):
         ConsoleUtility.print_conversation('Receptionist> With whom do you need an appointment?')
         index = 0
         options = []
@@ -195,6 +116,54 @@ class StateAsPatientGoHandler(StateHandler):
         receptionist.register_appointment(possible_appointment)
         ConsoleUtility.print_conversation('Receptionist> Thank you, the appointment has been registered')
 
+    def _see_staff(self, receptionist:Receptionist, patient:Patient, appointment:Appointment):
+        from healthcare.doctor import Doctor
+        ConsoleUtility.print_conversation('{role}> Hi, I am {role} {name}'.format(
+            role = appointment.staff.role.value, name = appointment.staff.name))
+        self._pause()
+        ConsoleUtility.print_conversation('{}> Let\'s start the consultation...'.format(appointment.staff.role.value))
+        for i in range(0,3):
+            self._pause()
+            ConsoleUtility.print_conversation('{}> ...'.format(appointment.staff.role.value))
+        ConsoleUtility.print_light(appointment.staff.consultation(patient))
+        self._pause()
+        if self._can_issue_prescription(appointment.staff) and len(patient.prescriptions)>0:
+            ConsoleUtility.print_conversation('{}> Do you need a repeat?'.format(appointment.staff.role.value))
+            input = ConsoleUtility.prompt_user_for_input(options=['Y','N'])
+            if input == 'Y':
+                doctor:Doctor = appointment.staff
+                patient.request_repeat(doctor)
+                ConsoleUtility.print_conversation('{role}> Here\'s your repeat')
+                self._pause()
+                ConsoleUtility.print_light('you> Thank you')
+        ConsoleUtility.print_conversation('{}> Take care.'.format(appointment.staff.role.value))
+        self._pause()
+        ConsoleUtility.print_light('you> Bye')
+        receptionist.cancel_appointment(appointment)
+
+    def _can_issue_prescription(self, staff:HealthcareProfessional) -> bool:
+        return hasattr(staff, 'issue_prescription') and callable(getattr(staff, 'issue_prescription'))
+
+    def _register_new_patient(self, receptionist:Receptionist, name):
+        patient = self._identify_user(name)
+        receptionist.register_patient(patient)
+        ConsoleUtility.print_conversation('Receptionist> Thank you, now you are one of our patients')
+        return patient
+
+    def _default_or_input(self, default):
+        if default is None:
+            return ConsoleUtility.prompt_user_for_input()
+        else:
+            ConsoleUtility.print_light(default)
+            return default
+
+    def _identify_user(self, name):
+        ConsoleUtility.print_conversation('Receptionist> What is your address?')
+        address = ConsoleUtility.prompt_user_for_input()
+        ConsoleUtility.print_conversation('Receptionist> What is your phone number?')
+        phone = ConsoleUtility.prompt_user_for_input()
+        return Patient(name, address, phone)
+
     def _cancel_an_appointment(self, receptionist:Receptionist, patient:Patient):
         appointments = self._print_appointments(receptionist, patient)
         ConsoleUtility.print_conversation('Receptionist> Which one do you want to cancel?')
@@ -205,13 +174,6 @@ class StateAsPatientGoHandler(StateHandler):
 
     def _find_next_appointment(self, receptionist:Receptionist, patient:Patient):
         receptionist.find_patient_appointments(patient)
-
-    def _print_appointments(self, receptionist:Receptionist, patient:Patient):
-        appointments = receptionist.find_patient_appointments(patient)
-        ConsoleUtility.print_conversation('Receptionist> Currently, you have {} appointment{}'.format(len(appointments),'s' if len(appointments)>1 else ''))
-        for idx, appointment in enumerate(appointments):
-            ConsoleUtility.print_light('{} with {}'.format(idx+1, appointment.date, appointment.staff))
-        return appointments
 
     def _pause(self):
         time.sleep(0.5 if self._quick else 1.5)
