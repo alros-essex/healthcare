@@ -39,6 +39,15 @@ class Patient():
     def surname(self):
         return self._surname
 
+    def request_repeat(self, prescription):
+        from healthcare.prescription import Prescription
+        # TODO
+        pass
+
+    def request_appointment(self) -> None:
+        # TODO
+        pass
+
     def __lt__(self, other):
         return other is not None and self.name < other.name
     

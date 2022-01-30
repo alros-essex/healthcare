@@ -19,6 +19,7 @@ class Nurse(HealthcareProfessional):
         """
         super().__init__(name, employee_number, EmployeeRole.NURSE)
 
+    # results of the consultation
     _consultation_results = [
         'Medical history and symptoms of {} were recorded',
         'Planned patient care for {}',
@@ -31,6 +32,13 @@ class Nurse(HealthcareProfessional):
         'Provided support and advice to {}'
     ]
 
-    def consultation(self, patient:Patient):
+    def consultation(self, patient:Patient) -> str:
+        """performs a consultation
+        
+        Args:
+            patient: Patient
+        Returns:
+            consultation result
+        """
         return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.firstname+' '+patient.surname)
     

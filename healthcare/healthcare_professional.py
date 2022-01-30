@@ -6,6 +6,7 @@ from .employee_role import EmployeeRole
 from .employee import Employee
 
 class HealthcareProfessional(Employee, ABC):
+    """base class for healthcare professionals"""
 
     def __init__(self, name: str, employee_number: str, role:EmployeeRole):
         super().__init__(name, employee_number)
