@@ -12,9 +12,10 @@ class Appointment():
         """creates the instance
         
         Args:
-            type: appointment type
+            type: AppointmentType
             staff: member of staff who will receive the patient
             patient: patient who booked the appoitment
+            date: datetime of the appointment
         Returns:
             None
         """
@@ -40,6 +41,13 @@ class Appointment():
         return self._date
 
     def is_on(self, filter_date:datetime.date) -> bool:
+        """compares with a date
+        
+        Args:
+            filter_date: a date
+        Returns:
+            True if the appointment is on filter_date
+        """
         return self.date.year == filter_date.year and self.date.month == filter_date.month and self.date.day == filter_date.day
 
     def __lt__(self, other) -> bool:

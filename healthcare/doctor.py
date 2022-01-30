@@ -20,6 +20,7 @@ class Doctor(HealthcareProfessional):
         """
         super().__init__(name, employee_number, EmployeeRole.DOCTOR)
 
+    # possible results of the consultations
     _consultation_results = [
         'Medical history and symptoms of {} were evaluated',
         'Planned patient care for {}',
@@ -33,32 +34,30 @@ class Doctor(HealthcareProfessional):
     ]
 
     def consultation(self, patient:Patient) -> str:
-        '''conducts a consultation
+        """conducts a consultation
         
         Args:
             patient: patient
         Returns:
             str: result of the consultation
-        '''
+        """
         return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.firstname+' '+patient.surname)
 
+    # possible parameters of a prescription
     _frequency = ['once a day','once a week','every two days','before meals']
     _type = ['Javalin','Pythoxib','Kothlinax','Rubyonrailaxetate','Prologlin','Rustolin','Malbolgex']
     _dosages = ['half pill','one pill','two pills']
 
     def issue_prescription(self, patient:Patient):
-        '''prescribe a drug
+        """prescribe a drug
         
         Args:
-            None
+            patient: Patient requiring a prescription
         Returns:
-            str: name of the drug
-        '''
+            Prescription
+        """
         from .prescription import Prescription
-        drug = self._pick_random(self._type)
-        dosage = self._pick_random(self._dosages)
-        frequency = self._pick_random(self._frequency)
+        drug = random.choice(self._type)
+        dosage = random.choice(self._dosages)
+        frequency = random.choice(self._frequency)
         return Prescription(drug, patient, self, random.randint(1, 5), '{} {}'.format(dosage, frequency))
-
-    def _pick_random(self, values):
-        return values[random.randint(1, len(values)-1)]
