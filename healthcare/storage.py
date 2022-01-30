@@ -37,18 +37,16 @@ class Storage():
                 role TEXT NOT NULL)''',
                 {})
             self._execute('''CREATE TABLE patients(
-                first_name TEXT NOT NULL,
-                surname TEXT NOT NULL,
+                name TEXT NOT NULL PRIMARY KEY,
                 address TEXT NOT NULL,
-                phone TEXT NOT NULL,
-                PRIMARY KEY(first_name, surname))''',
+                phone TEXT NOT NULL)''',
                 {})
             self._execute('''CREATE TABLE appointments(
                 type TEXT NOT NULL,
                 employee_number INTEGER NOT NULL,
-                patient_id INTEGER NOT NULL,
+                patient_name TEXT NOT NULL,
                 date INTEGER NOT NULL,
-                PRIMARY KEY(employee_number, patient_id, date))''',
+                PRIMARY KEY(employee_number, patient_name, date))''',
                 {})
 
     def select_employee(self, role:EmployeeRole = None, employee_number:str = None):
@@ -117,14 +115,14 @@ class Storage():
         Returns:
             array of Patient
         """
-        cur = self._execute('SELECT first_name, surname, address, phone from patients', {})
+        cur = self._execute('SELECT name, address, phone from patients', {})
         rows = cur.fetchall()
         patients = []
         for row in rows:
             patients.append(self._to_patient(row))
         return patients
 
-    def select_patient(self, first_name:str, surname:str) -> Patient:
+    def select_patient(self, name:str) -> Patient:
         """finds one Patient
         
         Args:
@@ -134,11 +132,10 @@ class Storage():
             Patient or None
         """
         params = {}
-        params['first_name'] = first_name
-        params['surname'] = surname
-        cur = self._execute('SELECT address, phone from patients where first_name = :first_name and surname = :surname', params)
+        params['name'] = name
+        cur = self._execute('SELECT address, phone from patients where name = :name', params)
         rows = cur.fetchall()
-        return Patient(first_name, surname, rows[0][0], rows[0][1]) if len(rows) > 0 else None
+        return Patient(name, rows[0][0], rows[0][1]) if len(rows) > 0 else None
 
     def insert_patient(self, patient:Patient) -> None:
         """insert a record
@@ -148,8 +145,8 @@ class Storage():
         Returns:
             None
         """
-        self._execute('INSERT INTO patients(first_name, surname, address, phone) VALUES(:first_name, :surname, :address, :phone)',
-            { 'first_name': patient.firstname, 'surname': patient.surname, 'address': patient.address, 'phone': patient.phone })
+        self._execute('INSERT INTO patients(name, address, phone) VALUES(:name, :address, :phone)',
+            { 'name': patient.name, 'address': patient.address, 'phone': patient.phone })
 
     def select_appointments(self, filter_employee_numbers=[], filter_date:date=None, filter_patient:Patient=None):
         """finds the matching appointments
@@ -164,10 +161,10 @@ class Storage():
         cur = self._execute('''SELECT 
             a.type, a.date,
             e.name, e.employee_number, e.role,
-            p.first_name, p.surname, p.address, p.phone
+            p.name, p.address, p.phone
             from employees e, patients p, appointments a
             where a.employee_number = e.employee_number
-            and patient_id = p.rowid
+            and a.patient_name = p.name
             {filter_employee_numbers}
             {filter_date}
             {filter_patient}
@@ -179,7 +176,7 @@ class Storage():
         rows = cur.fetchall()
         appointments = []
         for row in rows:
-            appointments.append(Appointment(AppointmentType[row[0]], self._to_employee(row[2:5]), self._to_patient(row[5:9]), datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")))
+            appointments.append(Appointment(AppointmentType[row[0]], self._to_employee(row[2:5]), self._to_patient(row[5:8]), datetime.datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")))
         return appointments
 
     def select_appointment_dates(self):
@@ -203,8 +200,7 @@ class Storage():
     
     def _build_filter_patient(self, filter_patient:Patient = None):
         """utility method to build a where clause"""
-        return '' if filter_patient is None else 'and p.first_name = "{first_name}" and p.surname = "{surname}"'.format(
-            first_name = filter_patient.firstname, surname = filter_patient.surname)
+        return '' if filter_patient is None else 'and p.name = "{name}"'.format(name = filter_patient.name)
 
     def insert_appointment(self, appointment:Appointment) -> None:
         """inserts a record
@@ -214,13 +210,10 @@ class Storage():
         Returns:
             None
         """
-        self._execute('''INSERT INTO appointments(type, employee_number, patient_id, date) VALUES(
-            :type, :employee_number, 
-            (SELECT rowid from patients p where p.first_name = :patient_first_name and p.surname = :patient_surname), 
-            :date)''',
+        self._execute('''INSERT INTO appointments(type, employee_number, patient_name, date) VALUES(
+            :type, :employee_number, :patient_name, :date)''',
             {'type': appointment.type.value, 'employee_number':appointment.staff.employee_number,
-            'patient_first_name': appointment.patient.firstname, 'patient_surname': appointment.patient.surname,
-            'date': appointment.date})
+            'patient_name': appointment.patient.name, 'date': appointment.date})
 
     def delete_appointment(self, appointment:Appointment) -> None:
         """delete one appointment
@@ -232,10 +225,9 @@ class Storage():
         """
         self._execute('''DELETE FROM appointments 
             where employee_number = :employee_number
-            and patient_id = (SELECT rowid from patients p where p.first_name = :first_name and p.surname = :surname)
+            and patient_name = :patient_name
             and date = :date''', 
-            {'employee_number': appointment.staff.employee_number, 'first_name': appointment.patient.firstname,
-            'surname': appointment.patient.surname, 'date': appointment.date})
+            {'employee_number': appointment.staff.employee_number, 'patient_name': appointment.patient.name, 'date': appointment.date})
 
     def _select_employee_build_params(self, role:EmployeeRole = None, employee_number:str = None):
         """helper to build a where clause"""
@@ -264,7 +256,7 @@ class Storage():
 
     def _to_patient(self, row) -> Patient:
         """helper to convert a row"""
-        return Patient(firstname = row[0], surname = row[1], address = row[2], phone = row[3])
+        return Patient(name = row[0], address = row[1], phone = row[2])
             
     def _execute(self, statement, params):
         """calls the database

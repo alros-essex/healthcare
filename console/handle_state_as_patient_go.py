@@ -84,15 +84,13 @@ class StateAsPatientGoHandler(StateAsPatientBaseHandler):
             self._pause()
             ConsoleUtility.print_light('you> Hi, yes.')
             self._pause()
-            ConsoleUtility.print_conversation('Receptionist> What\'s your surname?')
-            surname = ConsoleUtility.prompt_user_for_input()
-            ConsoleUtility.print_conversation('Receptionist> ...and your first name?')
+            ConsoleUtility.print_conversation('Receptionist> What\'s your name?')
             name = ConsoleUtility.prompt_user_for_input()
-        patient = receptionist.lookup_patient(name, surname)
+        patient = receptionist.lookup_patient(name)
         if patient is None:
             ConsoleUtility.print_conversation('Receptionist> You are not yet in the system, I need to register you as a patient')
             self._pause()
-            patient = self._register_new_patient(receptionist, name = name, surname = surname, patient=user)
+            patient = self._register_new_patient(receptionist, name = name, patient=user)
         return patient
 
     def _see_staff(self, receptionist:Receptionist, patient:Patient, appointment:Appointment):

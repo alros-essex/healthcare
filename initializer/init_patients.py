@@ -24,8 +24,7 @@ class InitPatients(InitTask):
         for surname in surnames:
             for firstname in firstnames:
                 patient = Patient(
-                    firstname = firstname, 
-                    surname = surname,
+                    name = '{} {}'.format(firstname, surname),
                     address = street_names[random.randrange(0,9)],
                     phone = '+44-7911 {:06d}'.format(random.randrange(111111,999999)))
                 self._storage.insert_patient(patient)

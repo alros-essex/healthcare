@@ -46,8 +46,7 @@ class StateAsPatientCallHandler(StateAsPatientBaseHandler):
         ConsoleUtility.print_option('I want to [R]egister as a patient')
         ConsoleUtility.print_option('I want to [M]ake an appointment')
         ConsoleUtility.print_option('I want to [C]ancel an appointment')
-        ConsoleUtility.print_option('Can you remind me [W]hen is my appointment?')
-        choice = ConsoleUtility.prompt_user_for_input(['R', 'M','C','W'])
+        choice = ConsoleUtility.prompt_user_for_input(['R', 'M','C'])
         if choice == 'R':
             return self._register_new_patient(receptionist, user)
         elif choice == 'M':

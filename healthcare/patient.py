@@ -2,20 +2,17 @@ class Patient():
     """
     Models a patient of the clinic
     """
-    def __init__(self, firstname:str, surname:str, address:str, phone:str):
+    def __init__(self, name:str, address:str, phone:str):
         """creates the instance
         
         Args:
-            firstname: patient's first name
-            surname: patient's surname
+            name: patient's name
             address: patient's address
             phone: patient's phone
         Returns:
             None
         """
-        self._name = ', '.join([surname, firstname])
-        self._firstname = firstname
-        self._surname = surname
+        self._name = name
         self._address = address
         self._phone = phone
         self._appointments = []
@@ -31,14 +28,6 @@ class Patient():
     @property
     def phone(self):
         return self._phone
-
-    @property
-    def firstname(self):
-        return self._firstname
-
-    @property
-    def surname(self):
-        return self._surname
 
     @property
     def appointments(self):

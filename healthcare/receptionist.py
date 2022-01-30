@@ -75,16 +75,15 @@ class Receptionist(Employee):
         """
         self._schedule.cancel_appoitment(appointment)
 
-    def lookup_patient(self, first_name:str, surname:str) -> Patient:
+    def lookup_patient(self, name:str) -> Patient:
         """finds the record of a Patient
         
         Args:
-            first_name: patient's first name
-            surname: patient's surname
+            name: patient's name
         returns:
             Patient or None
         """
-        return self._storage.select_patient(first_name=first_name, surname=surname)
+        return self._storage.select_patient(name)
 
     def register_patient(self, patient:Patient) -> None:
         """register a patient

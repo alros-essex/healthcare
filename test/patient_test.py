@@ -10,7 +10,7 @@ from healthcare.patient import Patient
 class TestPatient(unittest.TestCase):
 
     def test_add_cancel_appointment(self):
-        patient = Patient('','','','')
+        patient = Patient('','','')
         doctor = Doctor('','')
         date1 = datetime(2022,1,1,10,30)
         date2 = datetime(2022,2,2,10,30)
