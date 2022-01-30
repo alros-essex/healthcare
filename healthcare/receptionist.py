@@ -63,6 +63,7 @@ class Receptionist(Employee):
             None
         """
         self._schedule.add_appoitment(appointment)
+        appointment.patient.add_appointment(appointment)
 
     def cancel_appointment(self, appointment:Appointment) -> None:
         """cancels an appointment

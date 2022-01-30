@@ -1,7 +1,6 @@
 from datetime import datetime
-
-from .appointment_type import AppointmentType
 from .healthcare_professional import HealthcareProfessional
+from .appointment_type import AppointmentType
 from .patient import Patient
 
 class Appointment():
@@ -57,7 +56,7 @@ class Appointment():
         return self.date <= other.date
 
     def __eq__(self, other) -> bool:
-        return self.date == other.date
+        return self.date == other.date and self.staff == other.staff and self.patient == other.patient
     
     def __ne__(self, other) -> bool:
         return self.date != other.date

@@ -23,9 +23,10 @@ class InitPatients(InitTask):
 
         for surname in surnames:
             for firstname in firstnames:
-                self._storage.insert_patient(Patient(
+                patient = Patient(
                     firstname = firstname, 
                     surname = surname,
                     address = street_names[random.randrange(0,9)],
-                    phone = '+44-7911 {:06d}'.format(random.randrange(111111,999999))))
+                    phone = '+44-7911 {:06d}'.format(random.randrange(111111,999999)))
+                self._storage.insert_patient(patient)
             self._notify('patients named {}'.format(surname))

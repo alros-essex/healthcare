@@ -18,6 +18,7 @@ class Patient():
         self._surname = surname
         self._address = address
         self._phone = phone
+        self._appointments = []
 
     @property
     def name(self):
@@ -39,6 +40,10 @@ class Patient():
     def surname(self):
         return self._surname
 
+    @property
+    def appointments(self):
+        return self._appointments
+
     def request_repeat(self, prescription):
         from healthcare.prescription import Prescription
         # TODO
@@ -47,6 +52,12 @@ class Patient():
     def request_appointment(self) -> None:
         # TODO
         pass
+
+    def add_appointment(self, appointment) -> None:
+        self._appointments.append(appointment)
+
+    def delete_appointment(self, appointment) -> None:
+        self._appointments.remove(appointment)
 
     def __lt__(self, other):
         return other is not None and self.name < other.name

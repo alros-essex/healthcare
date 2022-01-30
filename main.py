@@ -3,14 +3,14 @@ from console.console import Console
 from initializer.initializer import Initializer
 from healthcare.storage import Storage
 from healthcare.appointment_schedule import AppointmentSchedule
-from test.storage_test import TestStorage
+from test.patient_test import TestPatient
 
 # a convenient main to call the application
 
 # TODO clean
 def run_test():
     from test.receptionist_test import TestReceptionist
-    #TestStorage().test_select_insert_appointment()
+    TestPatient().test_add_cancel_appointment()
 
 if __name__ == "__main__":
     # TODO clean
