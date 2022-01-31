@@ -7,7 +7,7 @@ class Doctor(HealthcareProfessional):
     """
     Models a doctor
     """
-    def __init__(self, name:str, employee_number:str):
+    def __init__(self, name:str, employee_number:str, storage:Storage):
         """creates the instance
         
         Args:
@@ -17,8 +17,6 @@ class Doctor(HealthcareProfessional):
             None
         """
         super().__init__(name, employee_number, EmployeeRole.DOCTOR)
-
-    def connect_to_storage(self, storage:Storage):
         self._storage = storage
 
     # possible results of the consultations
@@ -65,7 +63,11 @@ class Doctor(HealthcareProfessional):
             return None
         prescription = Prescription(random.choice(candidates), patient, self, random.randint(1, 5), float(random.randint(100, 10000))/100)
         patient.accept_prescription(prescription)
+        self._storage.insert_prescription(prescription)
         return prescription
+
+    def patients(self):
+        return self._storage.select_patients(self)
 
     def approve_repeat(self, prescription) -> bool:
         return True

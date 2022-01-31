@@ -13,7 +13,7 @@ from .patient import Patient
 class Receptionist(Employee):
     """models a receptionist"""
 
-    def __init__(self, name: str, employee_number: str, schedule:AppointmentSchedule = None, storage:Storage = None):
+    def __init__(self, name: str, employee_number: str, storage:Storage, schedule:AppointmentSchedule = None):
         """creates the instance
         
         Args:
@@ -32,6 +32,7 @@ class Receptionist(Employee):
     def role(self) -> EmployeeRole:
         return EmployeeRole.RECEPTIONIST
 
+    
     def connect_to_schedule(self, schedule:AppointmentSchedule) -> None:
         """the receptionist needs access to the schedule to manage appointments
         
@@ -41,7 +42,9 @@ class Receptionist(Employee):
             None
         """
         self._schedule = schedule
-    
+
+    #TODO clean
+    '''
     def connect_to_storage(self, storage:Storage) -> None:
         """the receptionist needs access to the storage to manage the patients
         
@@ -51,6 +54,7 @@ class Receptionist(Employee):
             None
         """
         self._storage = storage
+    '''
 
     def register_appointment(self,  appointment:Appointment) -> None:
         """stores an appointment
@@ -82,17 +86,18 @@ class Receptionist(Employee):
         """
         return self._storage.select_patient(name)
 
-    def register_patient(self, patient:Patient) -> None:
+    def register_patient(self, patient:Patient, doctor) -> None:
         """register a patient
         
         Args:
             patient: Patient to be registered
+            doctor: Doctor for the patient
         Returns:
             None
         """
         self._storage.insert_patient(patient)
+        self._storage.associate_doctor_patient(doctor, patient)
 
-    # TODO remove
     def find_patient_appointments(self, patient:Patient):
         return self._schedule.find_appointments(filter_patient=patient)
 

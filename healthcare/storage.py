@@ -58,22 +58,15 @@ class Storage():
                 dosage INTEGER NOT NULL,
                 PRIMARY KEY(type, patient_name, doctor_id))''',
                 {})
+            self._execute('''CREATE TABLE doctorpatients(
+                doctor_id TEXT NOT NULL,
+                patient_name TEXT NOT NULL,
+                PRIMARY KEY (doctor_id, patient_name))''',
+                {})
 
-    def select_prescriptions(self, patient:Patient):
-        cur = self._execute('''SELECT type, quantity, dosage
-            from prescriptions
-            where patient_name = :name''',
-            {'name': patient.name})
-        prescriptions = []
-        for row in cur.fetchall():
-            prescriptions.append(Prescription(row[0], patient, None, row[1], float(row[2])/100))
-        return prescriptions
-
-    def insert_prescription(self, prescription:Prescription):
-        self._execute('''INSERT INTO prescriptions(type, patient_name, doctor_id, quantity, dosage)
-            VALUES(:type, :name, :id, :quantity, :dosage)''',
-            {'type': prescription.type, 'name':prescription.patient.name, 'id': prescription.doctor.employee_number,
-            'quantity': prescription.quantity, 'dosage':prescription.dosage*100})
+    def associate_doctor_patient(self, doctor, patient) -> None:
+        self._execute('''INSERT INTO doctorpatients(doctor_id, patient_name)
+            VALUES(:id, :name)''', {'id': doctor.employee_number, 'name': patient.name})
 
     def select_employee(self, role:EmployeeRole = None, employee_number:str = None):
         """finds all employees with the given filters
@@ -133,15 +126,21 @@ class Storage():
         """
         return self.select_employee(role = EmployeeRole.RECEPTIONIST)
 
-    def select_patients(self):
+    def select_patients(self, doctor = None):
         """finds all the patients
         
         Args:
-            None
+            doctor: Doctor (optional)
         Returns:
             array of Patient
         """
-        cur = self._execute('SELECT name, address, phone from patients', {})
+        if doctor is None:
+            cur = self._execute('SELECT name, address, phone from patients', {})
+        else:
+            cur = self._execute('''SELECT p.name, p.address, p.phone 
+                from patients p, doctorpatients dp
+                where p.name = dp.patient_name
+                and dp.doctor_id = :id''', {'id': doctor.employee_number})
         rows = cur.fetchall()
         patients = []
         for row in rows:
@@ -256,6 +255,22 @@ class Storage():
             and date = :date''', 
             {'employee_number': appointment.staff.employee_number, 'patient_name': appointment.patient.name, 'date': appointment.date})
 
+    def select_prescriptions(self, patient:Patient):
+        cur = self._execute('''SELECT type, quantity, dosage
+            from prescriptions
+            where patient_name = :name''',
+            {'name': patient.name})
+        prescriptions = []
+        for row in cur.fetchall():
+            prescriptions.append(Prescription(row[0], patient, None, row[1], float(row[2])/100))
+        return prescriptions
+
+    def insert_prescription(self, prescription:Prescription):
+        self._execute('''INSERT INTO prescriptions(type, patient_name, doctor_id, quantity, dosage)
+            VALUES(:type, :name, :id, :quantity, :dosage)''',
+            {'type': prescription.type, 'name':prescription.patient.name, 'id': prescription.doctor.employee_number,
+            'quantity': prescription.quantity, 'dosage':prescription.dosage*100})
+
     def _select_employee_build_params(self, role:EmployeeRole = None, employee_number:str = None):
         """helper to build a where clause"""
         clause = None
@@ -275,11 +290,11 @@ class Storage():
         from .doctor import Doctor
         role = EmployeeRole[row[2]]
         if role == EmployeeRole.DOCTOR:
-            return Doctor(row[0], row[1])
+            return Doctor(row[0], row[1], storage=self)
         elif role == EmployeeRole.NURSE:
             return Nurse(row[0], row[1])
         else:
-            return Receptionist(row[0], row[1], None)
+            return Receptionist(row[0], row[1], storage=self)
 
     def _to_patient(self, row) -> Patient:
         """helper to convert a row"""

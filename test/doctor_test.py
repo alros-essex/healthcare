@@ -6,11 +6,12 @@ from healthcare.doctor import Doctor
 from healthcare.nurse import Nurse
 from healthcare.receptionist import Receptionist
 from healthcare.patient import Patient
+from healthcare.storage import Storage
 
 class TestDoctor(unittest.TestCase):
 
     def test_issue_prescription(self):
-        doc = Doctor('','')
+        doc = Doctor('','', Storage())
         ptn = Patient('','','')
 
         self.assertEquals(0, len(ptn.prescriptions))

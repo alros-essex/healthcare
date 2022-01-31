@@ -9,5 +9,5 @@ class StateHireReceptionist(StateHireStaff):
     def __init__(self, storage:Storage):
         super().__init__(State.MANAGE_RECEPTIONISTS, storage)
     
-    def _get_instance(self, name:str, employee_number:str):
-        return Receptionist(name, employee_number, None)
+    def _get_instance(self, name:str, employee_number:str, storage:Storage):
+        return Receptionist(name, employee_number, storage=storage)

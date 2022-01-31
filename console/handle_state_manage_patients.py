@@ -7,6 +7,8 @@ from .handle_state import StateHandler
 
 class StateManagePatients(StateHandler):
     
+    _columns = 3
+
     def __init__(self, storage:Storage):
         self._storage = storage
         self._next_state = {}
@@ -19,17 +21,21 @@ class StateManagePatients(StateHandler):
 
     def _print_status(self):
         ConsoleUtility.print_light('PATIENTS')
-        columns = 3
-        page = 15 * columns
-        patients = self._storage.select_patients()
-        for index, patient in enumerate(patients, 1):
-            print(patient.name.ljust(30), end='')
-            if index % columns == 0:
-                print()
-            if index % page ==0 and index >- page:
+        doctors = self._storage.select_doctors()
+        for i, doctor in enumerate(doctors):
+            self._print_status_for_doctor(doctor)
+            if i < len(doctors)-1:
                 ConsoleUtility.print_option('[ENTER] for more')
                 ConsoleUtility.prompt_user_for_input()
-        if len(patients) % columns != 0:
+        
+    def _print_status_for_doctor(self, doctor):
+        ConsoleUtility.print_option('=== Doctor {}\'s patiens ==='.format(doctor.name))
+        patients = self._storage.select_patients(doctor)
+        for index, patient in enumerate(patients, 1):
+            print(patient.name.ljust(30), end='')
+            if index % self._columns == 0:
+                print()
+        if len(patients) % self._columns != 0:
             print('\n')
 
     def _print_options(self):

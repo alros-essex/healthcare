@@ -21,6 +21,8 @@ class InitPatients(InitTask):
                  'Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth', 'Jennifer', 'Maria', 'Susan', 'Margaret', 'Dorothy']
         street_names = ['Main St', '2nd St', '3rd St', '1st St', 'Oak St', '4th St', 'Elm St', 'Pine St', 'Church St', 'Maple St']
 
+        doctors = self._storage.select_doctors()
+
         for surname in surnames:
             for firstname in firstnames:
                 patient = Patient(
@@ -28,4 +30,5 @@ class InitPatients(InitTask):
                     address = street_names[random.randrange(0,9)],
                     phone = '+44-7911 {:06d}'.format(random.randrange(111111,999999)))
                 self._storage.insert_patient(patient)
+                self._storage.associate_doctor_patient(random.choice(doctors), patient)
             self._notify('patients named {}'.format(surname))
