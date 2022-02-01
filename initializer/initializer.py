@@ -19,9 +19,9 @@ class Initializer():
     def initialize(self):
         init_steps = [
             InitClinic(),
-            InitDoctors(self._db, self._schedule),
-            InitNurses(self._db, self._schedule),
-            InitReceptionists(self._db, self._schedule),
+            InitDoctors(self._db),
+            InitNurses(self._db),
+            InitReceptionists(self._db),
             InitPatients(self._db),
             InitAppointments(self._db, self._schedule)
         ]

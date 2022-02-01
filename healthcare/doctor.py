@@ -1,13 +1,12 @@
 import random
 from .employee_role import EmployeeRole
 from .healthcare_professional import HealthcareProfessional
-from .storage import Storage
 
 class Doctor(HealthcareProfessional):
     """
     Models a doctor
     """
-    def __init__(self, name:str, employee_number:str, storage:Storage):
+    def __init__(self, name:str, employee_number:str):
         """creates the instance
         
         Args:
@@ -17,7 +16,8 @@ class Doctor(HealthcareProfessional):
             None
         """
         super().__init__(name, employee_number, EmployeeRole.DOCTOR)
-        self._storage = storage
+        from .storage import Storage
+        self._storage = Storage.instance()
 
     # possible results of the consultations
     _consultation_results = [

@@ -4,31 +4,31 @@ from os.path import exists
 import sqlite3
 from datetime import date, timedelta
 
-from healthcare.prescription import Prescription
-
-from .appointment_type import AppointmentType
-
-from .appointment import Appointment
-from .employee import Employee
-from .employee_role import EmployeeRole
-from .healthcare_professional import HealthcareProfessional
-from .patient import Patient
-from .employee import Employee
-
 class Storage():
     """persists all the data in a sqlite db"""
 
+    _instance = None
     _path_to_database='clinic.db'
 
-    def __init__(self, reset:bool = True):
+    @classmethod
+    def instance(cls):
+        if cls._instance is None:
+            cls._instance = Storage()
+        return cls._instance
+
+    @classmethod
+    def reset(cld):
+        if exists(Storage._path_to_database):
+            os.remove(Storage._path_to_database)
+
+    def __init__(self):
         """creates the instance
         
         Args:
-            reset: if True, the db is re-initialized (if present)
+            None
         Returns:
-            None"""
-        if reset:
-            os.remove(Storage._path_to_database) 
+            None
+        """
         path_to_database = Storage._path_to_database
         to_be_initialized = not exists(path_to_database)
         self.con = sqlite3.connect(path_to_database)
@@ -68,7 +68,15 @@ class Storage():
         self._execute('''INSERT INTO doctorpatients(doctor_id, patient_name)
             VALUES(:id, :name)''', {'id': doctor.employee_number, 'name': patient.name})
 
-    def select_employee(self, role:EmployeeRole = None, employee_number:str = None):
+    def select_doctor_for_patient(self, patient):
+        from .doctor import Doctor
+        cur = self._execute('''SELECT e.name, e.employee_number from employees e, doctorpatients dp
+            where dp.doctor_id = e.employee_number
+            and dp.patient_name = :name''', {'name':patient.name})
+        rows = cur.fetchall()
+        return Doctor(rows[0][0], rows[0][1]) if len(rows)>0 else None
+
+    def select_employee(self, role = None, employee_number:str = None):
         """finds all employees with the given filters
         
         Args:
@@ -85,7 +93,7 @@ class Storage():
             employees.append(self._to_employee(row))
         return employees
 
-    def insert_employee(self, employee:Employee) -> None:
+    def insert_employee(self, employee) -> None:
         """inserts a new record
         
         Args:
@@ -96,7 +104,7 @@ class Storage():
         self._execute('INSERT INTO employees(name, employee_number, role) VALUES(:name, :employee_number, :role)',
             { 'name': employee.name, 'employee_number': employee.employee_number, 'role': employee.role.name })
     
-    def select_doctors(self, employee_number:str = None):
+    def select_doctors(self, employee_number:str = None, max_patients:int = None):
         """shortcut of select_employee(DOCTOR)
         
         Args:
@@ -104,7 +112,20 @@ class Storage():
         Returns:
             array of Doctor
         """
-        return self.select_employee(role = EmployeeRole.DOCTOR)
+        from .employee_role import EmployeeRole
+        if max_patients is None:
+            return self.select_employee(role = EmployeeRole.DOCTOR)
+        else:
+            cur = self._execute('''SELECT name, employee_number, role
+                from employees
+                LEFT OUTER JOIN doctorpatients dp ON employee_number = doctor_id
+                group by employee_number, name, role
+                having count(*)<:max_patients''',{'max_patients':max_patients})
+            doctors = []
+            for row in cur.fetchall():
+                doctors.append(self._to_employee(row))
+            return doctors
+            
 
     def select_nurses(self, employee_number:str = None):
         """shortcut of select_employee(NURSE)
@@ -114,6 +135,7 @@ class Storage():
         Returns:
             array of Nurse
         """
+        from .employee_role import EmployeeRole
         return self.select_employee(role = EmployeeRole.NURSE)
 
     def select_receptionists(self, employee_number:str = None):
@@ -124,6 +146,7 @@ class Storage():
         Returns:
             array of Receptionist
         """
+        from .employee_role import EmployeeRole
         return self.select_employee(role = EmployeeRole.RECEPTIONIST)
 
     def select_patients(self, doctor = None):
@@ -134,6 +157,7 @@ class Storage():
         Returns:
             array of Patient
         """
+        from .patient import Patient
         if doctor is None:
             cur = self._execute('SELECT name, address, phone from patients', {})
         else:
@@ -148,7 +172,7 @@ class Storage():
             patients.append(patient)
         return patients
 
-    def select_patient(self, name:str) -> Patient:
+    def select_patient(self, name:str):
         """finds one Patient
         
         Args:
@@ -157,13 +181,14 @@ class Storage():
         Returns:
             Patient or None
         """
+        from .patient import Patient
         params = {}
         params['name'] = name
         cur = self._execute('SELECT address, phone from patients where name = :name', params)
         rows = cur.fetchall()
         return Patient(name, rows[0][0], rows[0][1]) if len(rows) > 0 else None
 
-    def insert_patient(self, patient:Patient) -> None:
+    def insert_patient(self, patient) -> None:
         """insert a record
         
         Args:
@@ -174,7 +199,7 @@ class Storage():
         self._execute('INSERT INTO patients(name, address, phone) VALUES(:name, :address, :phone)',
             { 'name': patient.name, 'address': patient.address, 'phone': patient.phone })
 
-    def select_appointments(self, filter_employee_numbers=[], filter_date:date=None, filter_patient:Patient=None):
+    def select_appointments(self, filter_employee_numbers=[], filter_date:date=None, filter_patient=None):
         """finds the matching appointments
         
         Args:
@@ -184,6 +209,8 @@ class Storage():
         Return:
             array of Appointment
         """
+        from .appointment import Appointment
+        from .appointment_type import AppointmentType
         cur = self._execute('''SELECT 
             a.type, a.date,
             e.name, e.employee_number, e.role,
@@ -224,11 +251,11 @@ class Storage():
         """utility method to build a where clause"""
         return '' if filter_date is None else 'and a.date >= "{}" and a.date<"{}"'.format(filter_date, filter_date+timedelta(days=1))
     
-    def _build_filter_patient(self, filter_patient:Patient = None):
+    def _build_filter_patient(self, filter_patient = None):
         """utility method to build a where clause"""
         return '' if filter_patient is None else 'and p.name = "{name}"'.format(name = filter_patient.name)
 
-    def insert_appointment(self, appointment:Appointment) -> None:
+    def insert_appointment(self, appointment) -> None:
         """inserts a record
         
         Args:
@@ -241,7 +268,7 @@ class Storage():
             {'type': appointment.type.value, 'employee_number':appointment.staff.employee_number,
             'patient_name': appointment.patient.name, 'date': appointment.date})
 
-    def delete_appointment(self, appointment:Appointment) -> None:
+    def delete_appointment(self, appointment) -> None:
         """delete one appointment
         
         Args:
@@ -255,7 +282,8 @@ class Storage():
             and date = :date''', 
             {'employee_number': appointment.staff.employee_number, 'patient_name': appointment.patient.name, 'date': appointment.date})
 
-    def select_prescriptions(self, patient:Patient):
+    def select_prescriptions(self, patient):
+        from .prescription import Prescription
         cur = self._execute('''SELECT type, quantity, dosage
             from prescriptions
             where patient_name = :name''',
@@ -265,13 +293,13 @@ class Storage():
             prescriptions.append(Prescription(row[0], patient, None, row[1], float(row[2])/100))
         return prescriptions
 
-    def insert_prescription(self, prescription:Prescription):
+    def insert_prescription(self, prescription):
         self._execute('''INSERT INTO prescriptions(type, patient_name, doctor_id, quantity, dosage)
             VALUES(:type, :name, :id, :quantity, :dosage)''',
             {'type': prescription.type, 'name':prescription.patient.name, 'id': prescription.doctor.employee_number,
             'quantity': prescription.quantity, 'dosage':prescription.dosage*100})
 
-    def _select_employee_build_params(self, role:EmployeeRole = None, employee_number:str = None):
+    def _select_employee_build_params(self, role = None, employee_number:str = None):
         """helper to build a where clause"""
         clause = None
         params = {}
@@ -284,20 +312,22 @@ class Storage():
         return clause, params
         
     def _to_employee(self, row):
+        from .employee_role import EmployeeRole
         """helper to convert a row"""
         from .nurse import Nurse
         from .receptionist import Receptionist
         from .doctor import Doctor
         role = EmployeeRole[row[2]]
         if role == EmployeeRole.DOCTOR:
-            return Doctor(row[0], row[1], storage=self)
+            return Doctor(row[0], row[1])
         elif role == EmployeeRole.NURSE:
             return Nurse(row[0], row[1])
         else:
-            return Receptionist(row[0], row[1], storage=self)
+            return Receptionist(row[0], row[1])
 
-    def _to_patient(self, row) -> Patient:
+    def _to_patient(self, row):
         """helper to convert a row"""
+        from .patient import Patient
         return Patient(name = row[0], address = row[1], phone = row[2])
             
     def _execute(self, statement, params):

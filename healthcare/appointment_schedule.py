@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+
 from .appointment import Appointment
 from .appointment_type import AppointmentType
 
@@ -6,6 +7,16 @@ class AppointmentSchedule():
     """
     Represents the schedule of the appointments
     """
+
+    _instance = None
+
+    @classmethod
+    def instance(cls):
+        if cls._instance is None:
+            from .storage import Storage
+            cls._instance = AppointmentSchedule(Storage.instance())
+        return cls._instance
+
     from .storage import Storage
     from .patient import Patient
     from .appointment import Appointment

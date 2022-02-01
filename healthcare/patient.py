@@ -1,4 +1,5 @@
-from healthcare.prescription import Prescription
+from datetime import datetime
+import random
 
 
 class Patient():
@@ -19,6 +20,8 @@ class Patient():
         self._address = address
         self._phone = phone
         self._prescriptions = {}
+        from healthcare.storage import Storage
+        self._storage = Storage.instance()
 
     @property
     def name(self):
@@ -32,15 +35,27 @@ class Patient():
     def phone(self):
         return self._phone
 
+    def doctor(self):
+        return self._storage.select_doctor_for_patient(self)
+
     def request_repeat(self, doctor):
         for p in self.prescriptions.values():
             doctor.approve_repeat(p)
 
-    def request_appointment(self) -> None:
-        # TODO
-        pass
+    def request_appointment(self, receptionist) -> None:
+        my_doctor = self.doctor()
+        if my_doctor is None:
+            available_doctors = receptionist.find_available_doctors()
+            my_doctor = random.choice(available_doctors)
+            receptionist.register_patient(self, my_doctor)
+        urgent = random.randint(1, 20) == 20
+        accepted = False
+        while not accepted:
+            appointment = receptionist.propose_appointment(my_doctor, self, urgent, datetime.now())
+            accepted = random.randint(1, 4) == 4
+        receptionist.register_appointment(appointment)
 
-    def accept_prescription(self, prescription:Prescription) -> None:
+    def accept_prescription(self, prescription) -> None:
         self._prescriptions[prescription.type] = prescription
 
     @property

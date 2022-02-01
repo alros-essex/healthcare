@@ -1,10 +1,8 @@
 from datetime import datetime, timedelta
-
-from .appointment_schedule import AppointmentSchedule
+from healthcare.doctor import Doctor
 from .appointment_type import AppointmentType
 from .appointment import Appointment
 from .healthcare_professional import HealthcareProfessional
-from .storage import Storage
 from .employee import Employee
 from .employee_role import EmployeeRole
 from .patient import Patient
@@ -13,48 +11,26 @@ from .patient import Patient
 class Receptionist(Employee):
     """models a receptionist"""
 
-    def __init__(self, name: str, employee_number: str, storage:Storage, schedule:AppointmentSchedule = None):
+    _max_patients_per_doctor = 500
+
+    def __init__(self, name: str, employee_number: str):
         """creates the instance
         
         Args:
             name: employee's name
             employee_number: employee's number
-            schedule: instance of AppointmentSchedule (optional)
-            storage: instance of Storage (optional)
         Returns:
             None
         """
         super().__init__(name, employee_number)
-        self._schedule = schedule
-        self._storage = storage
+        from .appointment_schedule import AppointmentSchedule
+        self._schedule = AppointmentSchedule.instance()
+        from .storage import Storage
+        self._storage = Storage.instance()
 
     @property
     def role(self) -> EmployeeRole:
         return EmployeeRole.RECEPTIONIST
-
-    
-    def connect_to_schedule(self, schedule:AppointmentSchedule) -> None:
-        """the receptionist needs access to the schedule to manage appointments
-        
-        Args:
-            schedule: AppointmentSchedule
-        Returns:
-            None
-        """
-        self._schedule = schedule
-
-    #TODO clean
-    '''
-    def connect_to_storage(self, storage:Storage) -> None:
-        """the receptionist needs access to the storage to manage the patients
-        
-        Args:
-            storage: Storage
-        Returns:
-            None
-        """
-        self._storage = storage
-    '''
 
     def register_appointment(self,  appointment:Appointment) -> None:
         """stores an appointment
@@ -85,6 +61,16 @@ class Receptionist(Employee):
             Patient or None
         """
         return self._storage.select_patient(name)
+
+    def find_available_doctors(self):
+        """returns the list of doctors with less than 500 patients
+        
+        Args:
+            None
+        returns:
+            array of Doctor
+        """
+        return self._storage.select_doctors(max_patients = Receptionist._max_patients_per_doctor)
 
     def register_patient(self, patient:Patient, doctor) -> None:
         """register a patient

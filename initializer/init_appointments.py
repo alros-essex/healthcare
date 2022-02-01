@@ -17,7 +17,6 @@ class InitAppointments(InitTask):
         doctors = self._storage.select_doctors()
         patients = self._storage.select_patients()
         receptionist:Receptionist = self._storage.select_receptionists()[0]
-        receptionist.connect_to_schedule(self._schedule)
         for i in range(0,11):
             patient = patients[random.randrange(0,len(patients))]
             doctor = doctors[random.randrange(0,len(doctors))]

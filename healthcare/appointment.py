@@ -1,19 +1,18 @@
 from datetime import datetime
 from .healthcare_professional import HealthcareProfessional
 from .appointment_type import AppointmentType
-from .patient import Patient
 
 class Appointment():
     """
     Represents an appointment
     """
-    def __init__(self, type:AppointmentType, staff:HealthcareProfessional, patient:Patient, date:datetime):
+    def __init__(self, type:AppointmentType, staff:HealthcareProfessional, patient, date:datetime):
         """creates the instance
         
         Args:
             type: AppointmentType
             staff: member of staff who will receive the patient
-            patient: patient who booked the appoitment
+            patient: Patient who booked the appoitment
             date: datetime of the appointment
         Returns:
             None
@@ -32,7 +31,7 @@ class Appointment():
         return self._staff
 
     @property
-    def patient(self) -> Patient:
+    def patient(self):
         return self._patient
 
     @property
