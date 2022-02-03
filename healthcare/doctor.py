@@ -1,4 +1,6 @@
 import random
+
+from numpy import isin
 from .employee_role import EmployeeRole
 from .healthcare_professional import HealthcareProfessional
 
@@ -72,3 +74,6 @@ class Doctor(HealthcareProfessional):
 
     def approve_repeat(self, prescription) -> bool:
         return True
+
+    def __eq__(self, other) -> bool:
+        return other is not None and isinstance(other, Doctor) and other.employee_number == self._employee_number

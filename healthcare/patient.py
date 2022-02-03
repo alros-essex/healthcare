@@ -22,6 +22,7 @@ class Patient():
         self._phone = phone
         self._prescriptions = {}
         self._storage = Storage.instance()
+        self._doctor = None
 
     @property
     def name(self):
@@ -36,7 +37,9 @@ class Patient():
         return self._phone
 
     def doctor(self):
-        return self._storage.select_doctor_for_patient(self)
+        if self._doctor is None:
+            self._doctor = self._storage.select_doctor_for_patient(self)
+        return self._doctor
 
     def request_repeat(self, doctor):
         for p in self.prescriptions.values():

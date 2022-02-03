@@ -138,7 +138,7 @@ class Storage():
             array of Nurse
         """
         from .employee_role import EmployeeRole
-        return self.select_employee(role = EmployeeRole.NURSE)
+        return self.select_employee(role = EmployeeRole.NURSE, employee_number=employee_number)
 
     def select_receptionists(self, employee_number:str = None):
         """shortcut of select_employee(RECEPTIONIST)
@@ -292,7 +292,7 @@ class Storage():
             {'name': patient.name})
         prescriptions = []
         for row in cur.fetchall():
-            prescriptions.append(Prescription(row[0], patient, None, row[1], float(row[2])/100))
+            prescriptions.append(Prescription(row[0], patient, patient.doctor(), row[1], float(row[2])/100))
         return prescriptions
 
     def insert_prescription(self, prescription):
@@ -309,7 +309,7 @@ class Storage():
             clause = ' where role = :role'
             params['role'] = role.name
         if employee_number is not None:
-            clause = (' where ' if clause is None else ' and ') + 'employee_number = :employee_number'
+            clause = (' where ' if clause is None else clause + ' and ') + 'employee_number = :employee_number'
             params['employee_number'] = employee_number
         return clause, params
         

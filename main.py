@@ -9,8 +9,8 @@ from healthcare.appointment_schedule import AppointmentSchedule
 
 # TODO clean
 def run_test():
-    from test.appointment_schedule_test import TestAppointmentSchedule
-    TestAppointmentSchedule().test_find_next_available()
+    from test.storage_test import TestStorage
+    TestStorage().test_insert_select_prescriptions()
 
 if __name__ == "__main__":
     # TODO clean

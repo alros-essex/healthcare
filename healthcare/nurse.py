@@ -42,3 +42,5 @@ class Nurse(HealthcareProfessional):
         """
         return self._consultation_results[random.randint(0, len(self._consultation_results)-1)].format(patient.name)
     
+    def __eq__(self, other) -> bool:
+        return other is not None and isinstance(other, Nurse) and other.employee_number == self.employee_number
