@@ -10,7 +10,7 @@ from healthcare.appointment_schedule import AppointmentSchedule
 # TODO clean
 def run_test():
     from test.storage_test import TestStorage
-    TestStorage().test_insert_select_prescriptions()
+    TestStorage().test_select_doctors()
 
 if __name__ == "__main__":
     # TODO clean

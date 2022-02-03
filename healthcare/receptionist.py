@@ -98,3 +98,6 @@ class Receptionist(Employee):
             Appointment (not saved)
         """
         return self._schedule.find_next_available(professional, patient, urgent, initial)
+
+    def __eq__(self, other) -> bool:
+        return other is not None and isinstance(other, Receptionist) and other.employee_number == self.employee_number

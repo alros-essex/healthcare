@@ -121,7 +121,7 @@ class Storage():
                 from employees
                 LEFT OUTER JOIN doctorpatients dp ON employee_number = doctor_id
                 group by employee_number, name, role
-                having count(*)<:max_patients and
+                having count(*)<=:max_patients and
                 role = :role''',{'max_patients':max_patients, 'role':EmployeeRole.DOCTOR.name})
             doctors = []
             for row in cur.fetchall():
