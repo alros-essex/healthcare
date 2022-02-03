@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from healthcare.appointment_schedule import AppointmentSchedule
 from healthcare.storage import Storage
-from healthcare.event import Event
+from console.event import Event
 from console.event_listener import EventListener
 
 class InitTask(ABC):

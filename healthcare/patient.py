@@ -16,11 +16,11 @@ class Patient():
         Returns:
             None
         """
+        from healthcare.storage import Storage
         self._name = name
         self._address = address
         self._phone = phone
         self._prescriptions = {}
-        from healthcare.storage import Storage
         self._storage = Storage.instance()
 
     @property

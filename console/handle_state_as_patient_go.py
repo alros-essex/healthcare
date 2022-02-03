@@ -38,8 +38,6 @@ class StateAsPatientGoHandler(StateHandler):
             ConsoleUtility.print_light('<it looks like nobody works here (Clinic must hire at least one receptionist and one doctor)>')
             return None
         receptionist:Receptionist = receptionists[random.randint(0, len(receptionists)-1)]
-        receptionist.connect_to_schedule(self._schedule)
-        receptionist.connect_to_storage(self._storage)
         return receptionist
 
     def _talk_with_receptionist(self, receptionist:Receptionist, patient:Patient): 
@@ -90,12 +88,10 @@ class StateAsPatientGoHandler(StateHandler):
 
     def _make_an_appointment(self, receptionist:Receptionist, patient:Patient):
         ConsoleUtility.print_conversation('Receptionist> With whom do you need an appointment?')
-        index = 0
+        index = 1
         options = []
-        for doctor in self._storage.select_doctors():
-            options.append(doctor)
-            ConsoleUtility.print_option('[{}] Doctor {}'.format(index +1, doctor.name))
-            index = index + 1
+        ConsoleUtility.print_option('[{}] Doctor {}'.format(index, patient.doctor.name))
+        index = index + 1
         for nurse in self._storage.select_nurses():
             options.append(nurse)
             ConsoleUtility.print_option('[{}] Nurse {}'.format(index + 1, nurse.name))
@@ -145,9 +141,9 @@ class StateAsPatientGoHandler(StateHandler):
     def _can_issue_prescription(self, staff:HealthcareProfessional) -> bool:
         return hasattr(staff, 'issue_prescription') and callable(getattr(staff, 'issue_prescription'))
 
-    def _register_new_patient(self, receptionist:Receptionist, name, doctor:Doctor):
+    def _register_new_patient(self, receptionist:Receptionist, name):
         patient = self._identify_user(name)
-        doctor = self._choose_a_doctor()
+        doctor = self._choose_a_doctor(receptionist)
         receptionist.register_patient(patient, doctor)
         ConsoleUtility.print_conversation('Receptionist> Thank you, now you are one of our patients')
         return patient
@@ -170,7 +166,7 @@ class StateAsPatientGoHandler(StateHandler):
         doctors = receptionist.find_available_doctors()
         ConsoleUtility.print_conversation('Receptionist> You should choose a doctor')
         options = []
-        for doctor in doctors:
+        for index, doctor in enumerate(doctors):
             options.append(doctor)
             ConsoleUtility.print_option('[{}] Doctor {}'.format(index +1, doctor.name))
             index = index + 1

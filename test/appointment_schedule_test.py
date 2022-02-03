@@ -1,138 +1,99 @@
-from datetime import datetime
 import unittest
-from healthcare.appointment import Appointment
+
 from healthcare.appointment_schedule import AppointmentSchedule
-from healthcare.appointment_type import AppointmentType
-from healthcare.doctor import Doctor
-from healthcare.patient import Patient
 
 class TestAppointmentSchedule(unittest.TestCase):
 
-    def test_find_appoitment_no_appointments(self):
-        doctor = Doctor('Leonard McCoy', 'DR123')
-        schedule = AppointmentSchedule()
+    def test_appointments(self):
+        from healthcare.appointment import Appointment
+        storage = self._mock_storage([Appointment(None, None, None, None)])
+        schedule = AppointmentSchedule(storage)
+        # test with mock
+        self.assertEqual(1, len(schedule.appointments))
 
-        calendar = schedule.find_appoitment(filter_professional=doctor)[0]
-
-        self.assertEquals(0, len(calendar.keys()))
-
-    def test_find_appoitment_one_appointment(self):
-        doctor = Doctor('Leonard McCoy', 'DR123')
-        patient = Patient('John','Doe','Some Street 1','1234567')
-        schedule = AppointmentSchedule()
-        moment = datetime(2022,1,22,10,30)
-        schedule.add_appoitment(Appointment('',doctor,patient, moment))
-
-        calendar = schedule.find_appoitment(filter_professional=doctor)[0]
-
-        self.assertEquals(1, len(calendar.keys()))
-        self.assertEquals(patient, calendar[moment].patient)
-
-    def test_find_appoitment_two_doctors_appointment(self):
-        doctor1 = Doctor('Leonard McCoy', 'DR123')
-        patient1 = Patient('John','Doe','Some Street 1','1234567')
-        doctor2 = Doctor('Jodie Whittaker', 'DR321')
-        patient2 = Patient('Jane','Doe','Some Street 10','7654321')
-        schedule = AppointmentSchedule()
-        moment = datetime(2022,1,22,10,30)
-        schedule.add_appoitment(Appointment('',doctor1,patient1, moment))
-        schedule.add_appoitment(Appointment('',doctor2,patient2, moment))
-
-        calendar = schedule.find_appoitment(filter_professional=doctor1)[0]
-
-        self.assertEquals(1, len(calendar.keys()))
-        self.assertEquals(patient1, calendar[moment].patient)
-
-        calendar = schedule.find_appoitment(filter_professional=doctor2)[0]
-
-        self.assertEquals(1, len(calendar.keys()))
-        self.assertEquals(patient2, calendar[moment].patient)
-
-    def test_find_appoitment_same_patient_two_doctors(self):
-        doctor1 = Doctor('Leonard McCoy', 'DR123')
-        patient1 = Patient('John','Doe','Some Street 1','1234567')
-        doctor2 = Doctor('Jodie Whittaker', 'DR321')
-        patient2 = Patient('Jane','Doe','Some Street 10','7654321')
-        schedule = AppointmentSchedule()
-        moment1 = datetime(2022,1,22,10,30)
-        moment2 = datetime(2022,1,22,11,30)
-        schedule.add_appoitment(Appointment('',doctor1,patient1, moment1))
-        schedule.add_appoitment(Appointment('',doctor2,patient1, moment2))
-        schedule.add_appoitment(Appointment('',doctor1,patient2, moment2))
-        schedule.add_appoitment(Appointment('',doctor2,patient2, moment1))
-
-        calendars = schedule.find_appoitment(filter_patient=patient1)
-
-        self.assertEquals(1, len(calendars[0]))
-        self.assertEquals(patient1, calendars[0][moment1].patient)
-        self.assertEquals(doctor1, calendars[0][moment1].staff)
-        self.assertEquals(1, len(calendars[1]))
-        self.assertEquals(patient1, calendars[1][moment2].patient)
-        self.assertEquals(doctor2, calendars[1][moment2].staff)
-
-    def test_find_appoitment_same_patient_two_doctors_flatten(self):
-        doctor1 = Doctor('Leonard McCoy', 'DR123')
-        patient1 = Patient('John','Doe','Some Street 1','1234567')
-        doctor2 = Doctor('Jodie Whittaker', 'DR321')
-        schedule = AppointmentSchedule()
-        schedule.add_appoitment(Appointment('',doctor1,patient1, datetime(2022,1,22,10,30)))
-        schedule.add_appoitment(Appointment('',doctor2,patient1, datetime(2022,1,22,11,30)))
-        schedule.add_appoitment(Appointment('',doctor2,patient1, datetime(2022,1,22,12,30)))
-
-        appointments = schedule.find_appoitment(filter_patient=patient1, flatten=True)
-
-        self.assertEquals(3, len(appointments))
+    def test_add_appoitment(self):
+        from healthcare.appointment import Appointment
+        storage = self._mock_storage()
+        schedule = AppointmentSchedule(storage)
+        # test with mock
+        schedule.add_appoitment(Appointment(None, None, None, None))
+        self.assertTrue(storage._called_insert_appointment)
 
     def test_cancel_appoitment(self):
-        doctor1 = Doctor('Leonard McCoy', 'DR123')
-        patient1 = Patient('John','Doe','Some Street 1','1234567')
-        doctor2 = Doctor('Jodie Whittaker', 'DR321')
-        schedule = AppointmentSchedule()
-        schedule.add_appoitment(Appointment(AppointmentType.NORMAL,doctor1,patient1, datetime(2022,1,22,10,30)))
-        schedule.add_appoitment(Appointment(AppointmentType.NORMAL,doctor2,patient1, datetime(2022,1,22,11,30)))
-        schedule.add_appoitment(Appointment(AppointmentType.NORMAL,doctor2,patient1, datetime(2022,1,22,12,30)))
+        from healthcare.appointment import Appointment
+        storage = self._mock_storage()
+        schedule = AppointmentSchedule(storage)
+        # test with mock
+        schedule.cancel_appoitment(Appointment(None, None, None, None))
+        self.assertTrue(storage._called_delete_appointment)
 
-        schedule.cancel_appoitment(Appointment('',doctor2,patient1, datetime(2022,1,22,11,30)))
+    def test_find_next_available(self):
+        from datetime import datetime
+        from healthcare.doctor import Doctor
+        from healthcare.patient import Patient
+        storage = self._mock_storage()
+        schedule = AppointmentSchedule(storage)
+        doctor = Doctor('','')
+        patient = Patient('','','')
+        # if patients calls before opening time between Mon-Fri, appointments should be on the same day at opening time for urgency
+        appointment = schedule.find_next_available(doctor, patient, True, datetime(2022, 1, 19, 5, 15))
+        self.assertEqual(datetime(2022, 1, 19, 8, 0), appointment.date)
+        # if patients calls before opening time between Mon-Fri, appointments should be on the same day at normal opening time
+        appointment = schedule.find_next_available(doctor, patient, False, datetime(2022, 1, 19, 5, 15))
+        self.assertEqual(datetime(2022, 1, 19, 9, 0), appointment.date)
+        # if patients calls after opening time between Mon-Fri, appointments should be on the same day at the next slot of 30 minutes after the current one
+        appointment = schedule.find_next_available(doctor, patient, False, datetime(2022, 1, 19, 10, 31))
+        self.assertEqual(datetime(2022, 1, 19, 11, 30), appointment.date)
+        # if patients calls after closing time between Mon-Fri, appointments should be on the next day at opening time
+        appointment = schedule.find_next_available(doctor, patient, False, datetime(2022, 1, 19, 15, 31))
+        self.assertEqual(datetime(2022, 1, 20, 9, 0), appointment.date)
+        # if patients calls after closing time on Fri, appointments should be on the next Monday
+        appointment = schedule.find_next_available(doctor, patient, False, datetime(2022, 1, 21, 15, 31))
+        self.assertEqual(datetime(2022, 1, 24, 9, 0), appointment.date)
 
-        calendars = schedule.find_appoitment(filter_patient=patient1)
+    def test_find_appointments(self):
+        from datetime import date, datetime
+        from healthcare.doctor import Doctor
+        from healthcare.patient import Patient
+        storage = self._mock_storage()
+        schedule = AppointmentSchedule(storage)
+        # vefify filters in the query
+        schedule.find_appointments(
+            filter_professional=Doctor('','1'), 
+            filter_professionals=[Doctor('','2'), Doctor('','3')],
+            filter_date=date(2022, 1, 20),
+            filter_patient=Patient('4','',''))
+        # values are stored in the mock
+        self.assertEqual(storage._called_select_appointments['filter_employee_numbers'],['1','2','3'])
+        self.assertEqual(storage._called_select_appointments['filter_date'],date(2022, 1, 20))
+        self.assertEqual(storage._called_select_appointments['filter_patient'],Patient('4','',''))
 
-        self.assertEquals(1, len(calendars[0]))
-        self.assertEquals(patient1, calendars[0][datetime(2022,1,22,10,30)].patient)
-        self.assertEquals(doctor1, calendars[0][datetime(2022,1,22,10,30)].staff)
-        self.assertEquals(1, len(calendars[1]))
-        self.assertEquals(patient1, calendars[1][datetime(2022,1,22,12,30)].patient)
-        self.assertEquals(doctor2, calendars[1][datetime(2022,1,22,12,30)].staff)
+    def find_dates_with_appointments(self):
+        storage = self._mock_storage()
+        schedule = AppointmentSchedule(storage)
+        # verify with mock
+        schedule.find_dates_with_appointments()
+        self.assertTrue(storage._called_select_appointment_dates)
 
-    def test_round_initial_time_round_hours(self):
-        schedule = AppointmentSchedule()
-        
-        before = schedule._round_initial_time(datetime(2022, 1, 21, 8, 28))
-        self.assertEqual(datetime(2022, 1, 21, 8, 30), before, 'it was: {}'.format(before))
-
-        after = schedule._round_initial_time(datetime(2022, 1, 21, 8, 38))
-        self.assertEqual(datetime(2022, 1, 21, 9, 0), after, 'it was: {}'.format(after))
-
-    def test_next_slot_next_same_day(self):
-        schedule = AppointmentSchedule()
-
-        next = schedule._next_slot(False, datetime(2022, 1, 27, 7, 0))
-
-        self.assertEquals(datetime(2022, 1, 27, 9, 0), next)
-
-    def test_next_slot_next_tomorrow(self):
-        schedule = AppointmentSchedule()
-
-        next = schedule._next_slot(False, datetime(2022, 1, 27, 17, 0))
-
-        self.assertEquals(datetime(2022, 1, 28, 9, 0), next)
-
-    def test_next_slot_skip_weekends(self):
-        schedule = AppointmentSchedule()
-
-        next = schedule._next_slot(False, datetime(2022, 1, 28, 19, 0))
-
-        self.assertEquals(datetime(2022, 1, 31, 9, 0), next)
-
-
-if __name__ == '__main__':
-    unittest.main()
+    def _mock_storage(self, appointments = []):
+        from healthcare.appointment import Appointment
+        from healthcare.patient import Patient
+        from healthcare.storage import Storage
+        class MockStorage():
+            def select_appointments(self, filter_employee_numbers=[], filter_date=None, filter_patient=None):
+                return [Appointment(None, None, None, None)]
+            def insert_appointment(self, appointment):
+                self._called_insert_appointment = True
+            def delete_appointment(self, appointment):
+                self._called_delete_appointment = True
+            def select_appointments(self, filter_employee_numbers=[], filter_date=None, filter_patient=None):
+                self._called_select_appointments={
+                    'filter_employee_numbers': filter_employee_numbers,
+                    'filter_date': filter_date,
+                    'filter_patient': filter_patient
+                }
+                return appointments
+            def select_appointment_dates(self):
+                self._called_select_appointment_dates = True
+        Storage._instance = MockStorage()
+        return Storage._instance

@@ -17,8 +17,9 @@ class Storage():
         return cls._instance
 
     @classmethod
-    def reset(cld):
+    def reset(cls):
         if exists(Storage._path_to_database):
+            cls._instance = None
             os.remove(Storage._path_to_database)
 
     def __init__(self):
@@ -120,7 +121,8 @@ class Storage():
                 from employees
                 LEFT OUTER JOIN doctorpatients dp ON employee_number = doctor_id
                 group by employee_number, name, role
-                having count(*)<:max_patients''',{'max_patients':max_patients})
+                having count(*)<:max_patients and
+                role = :role''',{'max_patients':max_patients, 'role':EmployeeRole.DOCTOR.name})
             doctors = []
             for row in cur.fetchall():
                 doctors.append(self._to_employee(row))
@@ -245,7 +247,7 @@ class Storage():
 
     def _build_filter_employee_numbers(self, filter_employee_numbers = []):
         """utility method to build a where clause"""
-        return '' if filter_employee_numbers is None else 'and e.employee_number IN ({})'.format(','.join(f'"{f}"' for f in filter_employee_numbers))
+        return '' if len(filter_employee_numbers)==0 else 'and e.employee_number IN ({})'.format(','.join(f'"{f}"' for f in filter_employee_numbers))
 
     def _build_filter_date(self, filter_date:date = None):
         """utility method to build a where clause"""

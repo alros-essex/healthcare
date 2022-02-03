@@ -17,6 +17,11 @@ class AppointmentSchedule():
             cls._instance = AppointmentSchedule(Storage.instance())
         return cls._instance
 
+    @classmethod
+    def reset(cls):
+        """to be called when storage is reset"""
+        cls._instance = None
+
     from .storage import Storage
     from .patient import Patient
     from .appointment import Appointment

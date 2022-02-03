@@ -6,6 +6,7 @@ class Doctor(HealthcareProfessional):
     """
     Models a doctor
     """
+    
     def __init__(self, name:str, employee_number:str):
         """creates the instance
         

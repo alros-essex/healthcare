@@ -1,7 +1,7 @@
 from tqdm import tqdm
 import time
 
-from healthcare.event import Event
+from .event import Event
 from .event_listener import EventListener
 
 class ProgressBar(EventListener):

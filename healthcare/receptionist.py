@@ -1,6 +1,4 @@
-from datetime import datetime, timedelta
-from healthcare.doctor import Doctor
-from .appointment_type import AppointmentType
+from datetime import datetime
 from .appointment import Appointment
 from .healthcare_professional import HealthcareProfessional
 from .employee import Employee
@@ -22,10 +20,10 @@ class Receptionist(Employee):
         Returns:
             None
         """
-        super().__init__(name, employee_number)
         from .appointment_schedule import AppointmentSchedule
-        self._schedule = AppointmentSchedule.instance()
         from .storage import Storage
+        super().__init__(name, employee_number)
+        self._schedule = AppointmentSchedule.instance()
         self._storage = Storage.instance()
 
     @property
