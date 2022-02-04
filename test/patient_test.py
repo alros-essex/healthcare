@@ -20,9 +20,9 @@ class TestPatient(unittest.TestCase):
 
     def test_request_repeat(self):
         from healthcare.prescription import Prescription
+        storage = self._mock_storage(prescriptions=[Prescription('',None, None, 0, 0)])
         doctor = self._mock_doctor()
         patient = Patient('','','')
-        patient.accept_prescription(Prescription('',None, None, 0, 0))
         patient.request_repeat(doctor)
         # verify with the mock
         self.assertTrue(doctor.called_approve_repeat)
@@ -46,19 +46,17 @@ class TestPatient(unittest.TestCase):
         self.assertTrue(receptionist._called_register_patient)
         self.assertTrue(receptionist._called_register_appointment)
 
-    def test_accept_prescription(self):
-        from healthcare.prescription import Prescription
-        patient = Patient('','','')
-        # store first prescription
-        patient.accept_prescription(Prescription('type',None,None,0,0))
-        self.assertIsNotNone(patient.prescriptions['type'])
-
-    def _mock_storage(self, patients_doctor=None):
+    def _mock_storage(self, patients_doctor=None, prescriptions=[]):
         from healthcare.storage import Storage
         class MockStorage():
+
             def select_doctor_for_patient(self, patient):
                 self.select_doctor_for_patient = True
                 return patients_doctor
+
+            def select_prescriptions(self, patient):
+                return prescriptions
+
         Storage._instance = MockStorage()
         return Storage._instance
 

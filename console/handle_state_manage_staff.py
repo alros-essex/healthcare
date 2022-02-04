@@ -21,7 +21,7 @@ class StateManageStaff(StateHandler, ABC):
     def _print_status(self):
         ConsoleUtility.print_light('{} MENU'.format(self._type.upper()))
         for staff in self._get_managed_staff():
-            ConsoleUtility.print_light('- {}'.format(staff))
+            ConsoleUtility.print_light('- {}: {}'.format(staff.employee_number, staff.name))
 
     def _print_options(self):
         ConsoleUtility.print_option('[H]ire a {}'.format(self._type))

@@ -89,12 +89,13 @@ class StateAsPatientGoHandler(StateHandler):
     def _make_an_appointment(self, receptionist:Receptionist, patient:Patient):
         ConsoleUtility.print_conversation('Receptionist> With whom do you need an appointment?')
         index = 1
-        options = []
-        ConsoleUtility.print_option('[{}] Doctor {}'.format(index, patient.doctor.name))
+        doctor = patient.doctor()
+        options = [doctor]
+        ConsoleUtility.print_option('[{}] Doctor {}'.format(index, doctor.name))
         index = index + 1
         for nurse in self._storage.select_nurses():
             options.append(nurse)
-            ConsoleUtility.print_option('[{}] Nurse {}'.format(index + 1, nurse.name))
+            ConsoleUtility.print_option('[{}] Nurse {}'.format(index, nurse.name))
             index = index + 1
         staff = options[int(ConsoleUtility.prompt_user_for_input(validation = lambda i: int(i)>0 and int(i)<=index)) - 1]
         ConsoleUtility.print_conversation('Receptionist> Is it urgent?')

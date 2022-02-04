@@ -20,7 +20,7 @@ class Patient():
         self._name = name
         self._address = address
         self._phone = phone
-        self._prescriptions = {}
+        self._prescriptions = None
         self._storage = Storage.instance()
         self._doctor = None
 
@@ -42,7 +42,7 @@ class Patient():
         return self._doctor
 
     def request_repeat(self, doctor):
-        for p in self.prescriptions.values():
+        for p in self.prescriptions:
             doctor.approve_repeat(p)
 
     def request_appointment(self, receptionist) -> None:
@@ -58,12 +58,9 @@ class Patient():
             accepted = random.randint(1, 4) == 4
         receptionist.register_appointment(appointment)
 
-    def accept_prescription(self, prescription) -> None:
-        self._prescriptions[prescription.type] = prescription
-
     @property
     def prescriptions(self):
-        return self._prescriptions
+        return self._storage.select_prescriptions(self)
 
     def __lt__(self, other):
         return other is not None and self.name < other.name

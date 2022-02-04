@@ -60,12 +60,12 @@ class Doctor(HealthcareProfessional):
             Prescription
         """
         from .prescription import Prescription
-        candidates = [d for d in self._type if d not in patient.prescriptions]
+        already_prescribed = [p.type for p in patient.prescriptions]
+        candidates = [d for d in self._type if d not in already_prescribed]
         if len(candidates)==0:
             # patients already has all possible prescriptions!
             return None
         prescription = Prescription(random.choice(candidates), patient, self, random.randint(1, 5), float(random.randint(100, 10000))/100)
-        patient.accept_prescription(prescription)
         self._storage.insert_prescription(prescription)
         return prescription
 

@@ -210,7 +210,7 @@ class AppointmentSchedule():
         Returns:
             Appointment: dict of professional -> (dict of date -> appoitment)
         """
-        employee_numbers_to_consider = [p.employee_number for p in self._merge_professional_filters(filter_professional, filter_professionals)] if filter_professional is not None or len(filter_professionals)>0 else None
+        employee_numbers_to_consider = [p.employee_number for p in self._merge_professional_filters(filter_professional, filter_professionals)] if filter_professional is not None or len(filter_professionals)>0 else []
         return self._storage.select_appointments(filter_patient=filter_patient, filter_employee_numbers=employee_numbers_to_consider, filter_date = filter_date)
 
     def find_dates_with_appointments(self):
