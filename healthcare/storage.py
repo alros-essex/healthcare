@@ -1,8 +1,8 @@
 import datetime
+from datetime import date, timedelta
 import os
 from os.path import exists
 import sqlite3
-from datetime import date, timedelta
 
 class Storage():
     """persists all the data in a sqlite db"""

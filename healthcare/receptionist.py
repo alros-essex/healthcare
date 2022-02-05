@@ -1,10 +1,5 @@
 from datetime import datetime
-from .appointment import Appointment
-from .healthcare_professional import HealthcareProfessional
 from .employee import Employee
-from .employee_role import EmployeeRole
-from .patient import Patient
-
 
 class Receptionist(Employee):
     """models a receptionist"""
@@ -27,10 +22,11 @@ class Receptionist(Employee):
         self._storage = Storage.instance()
 
     @property
-    def role(self) -> EmployeeRole:
+    def role(self):
+        from .employee_role import EmployeeRole
         return EmployeeRole.RECEPTIONIST
 
-    def register_appointment(self,  appointment:Appointment) -> None:
+    def register_appointment(self,  appointment) -> None:
         """stores an appointment
         
         Args:
@@ -40,7 +36,7 @@ class Receptionist(Employee):
         """
         self._schedule.add_appoitment(appointment)
 
-    def cancel_appointment(self, appointment:Appointment) -> None:
+    def cancel_appointment(self, appointment) -> None:
         """cancels an appointment
         
         Args:
@@ -50,7 +46,7 @@ class Receptionist(Employee):
         """
         self._schedule.cancel_appoitment(appointment)
 
-    def lookup_patient(self, name:str) -> Patient:
+    def lookup_patient(self, name:str):
         """finds the record of a Patient
         
         Args:
@@ -70,7 +66,7 @@ class Receptionist(Employee):
         """
         return self._storage.select_doctors(max_patients = Receptionist._max_patients_per_doctor)
 
-    def register_patient(self, patient:Patient, doctor) -> None:
+    def register_patient(self, patient, doctor) -> None:
         """register a patient
         
         Args:
@@ -82,10 +78,10 @@ class Receptionist(Employee):
         self._storage.insert_patient(patient)
         self._storage.associate_doctor_patient(doctor, patient)
 
-    def find_patient_appointments(self, patient:Patient):
+    def find_patient_appointments(self, patient):
         return self._schedule.find_appointments(filter_patient=patient)
 
-    def propose_appointment(self, professional:HealthcareProfessional, patient:Patient, urgent:bool, initial:datetime) -> Appointment:
+    def propose_appointment(self, professional, patient, urgent:bool, initial:datetime):
         """creates a potential appointment
         
         Args:

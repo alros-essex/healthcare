@@ -1,8 +1,5 @@
 import random
-
-from .employee_role import EmployeeRole
 from .healthcare_professional import HealthcareProfessional
-from .patient import Patient
 
 class Nurse(HealthcareProfessional):
     """
@@ -17,6 +14,7 @@ class Nurse(HealthcareProfessional):
         Returns:
             None
         """
+        from .employee_role import EmployeeRole
         super().__init__(name, employee_number, EmployeeRole.NURSE)
 
     # results of the consultation
@@ -32,7 +30,7 @@ class Nurse(HealthcareProfessional):
         'Provided support and advice to {}'
     ]
 
-    def consultation(self, patient:Patient) -> str:
+    def consultation(self, patient) -> str:
         """performs a consultation
         
         Args:

@@ -1,7 +1,3 @@
-from healthcare.appointment_schedule import AppointmentSchedule
-from healthcare.nurse import Nurse
-from healthcare.storage import Storage
-
 from .init_hiring_staff import InitHiringStaff
 
 class InitNurses(InitHiringStaff):
@@ -9,6 +5,7 @@ class InitNurses(InitHiringStaff):
         return 'nurses'
 
     def _get_candidates_to_hire(self):
+        from healthcare.nurse import Nurse
         return [
             Nurse('Haleh Adams', 'NR001'),
             Nurse('Carla Espinosa', 'NR002'),

@@ -1,10 +1,6 @@
 from datetime import datetime
-from pydoc import Doc
 import unittest
 from healthcare.appointment import Appointment
-from healthcare.doctor import Doctor
-from healthcare.nurse import Nurse
-from healthcare.patient import Patient
 from healthcare.receptionist import Receptionist
 
 class TestReceptionist(unittest.TestCase):

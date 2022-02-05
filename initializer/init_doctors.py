@@ -1,5 +1,4 @@
 from healthcare.doctor import Doctor
-from healthcare.storage import Storage
 from .init_hiring_staff import InitHiringStaff
 
 class InitDoctors(InitHiringStaff):

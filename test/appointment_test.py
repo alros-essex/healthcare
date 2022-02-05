@@ -1,13 +1,13 @@
 from datetime import datetime,date
 import unittest
-from healthcare.appointment import Appointment
-from healthcare.appointment_type import AppointmentType
-from healthcare.doctor import Doctor
-from healthcare.patient import Patient
 
 class TestAppointment(unittest.TestCase):
 
     def test_is_on(self):
+        from healthcare.appointment import Appointment
+        from healthcare.appointment_type import AppointmentType
+        from healthcare.doctor import Doctor
+        from healthcare.patient import Patient
         appointment = Appointment(
             AppointmentType.NORMAL, 
             Doctor('',''), 

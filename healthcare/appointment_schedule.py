@@ -1,8 +1,5 @@
 from datetime import date, datetime, timedelta
 
-from .appointment import Appointment
-from .appointment_type import AppointmentType
-
 class AppointmentSchedule():
     """
     Represents the schedule of the appointments
@@ -79,6 +76,8 @@ class AppointmentSchedule():
         Returns:
             Appointment (not saved)
         """
+        from .appointment import Appointment
+        from .appointment_type import AppointmentType
         starting = self._round_initial_time(initial)
         appointments = self._appointments_as_dict(self.find_appointments(filter_professional=professional))
         slot = self._find_next_slot(appointments, urgent, starting)
@@ -143,8 +142,6 @@ class AppointmentSchedule():
         if not self._is_it_open(starting, urgent):
             slot = self._urgent_next_opening_time(slot) if urgent else self._non_urgent_next_opening_time(slot)
         return slot
-
-    # TODO manage weekends
 
     def _is_it_open(self, time:datetime, urgent:bool) -> bool:
         """checks if the clinic is open

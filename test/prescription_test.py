@@ -1,17 +1,13 @@
 from datetime import datetime
 import unittest
-from healthcare.appointment import Appointment
-from healthcare.appointment_type import AppointmentType
-from healthcare.doctor import Doctor
-from healthcare.nurse import Nurse
-from healthcare.prescription import Prescription
-from healthcare.receptionist import Receptionist
-from healthcare.patient import Patient
-from healthcare.storage import Storage
 
 class TestPrescription(unittest.TestCase):
 
     def test_db(self):
+        from healthcare.doctor import Doctor
+        from healthcare.prescription import Prescription
+        from healthcare.patient import Patient
+        from healthcare.storage import Storage
         storage = Storage()
         patient1 = Patient('John', '', '')
         patient2 = Patient('Jane', '', '')

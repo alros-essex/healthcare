@@ -1,7 +1,6 @@
 from datetime import datetime
 import random
 
-
 class Patient():
     """
     Models a patient of the clinic

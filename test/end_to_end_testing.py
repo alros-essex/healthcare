@@ -1,8 +1,5 @@
 import random
-from telnetlib import DO
 import unittest
-
-from numpy import isin
 
 class TestEndToEnd(unittest.TestCase):
 

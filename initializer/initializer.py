@@ -1,24 +1,18 @@
-from console.progress_bar import ProgressBar
-from healthcare.appointment_schedule import AppointmentSchedule
-from healthcare.storage import Storage
-
-from .init_appointments import InitAppointments
-from .init_clinic import InitClinic
-from .init_doctors import InitDoctors
-from .init_nurses import InitNurses
-from .init_patients import InitPatients
-from .init_receptionists import InitReceptionists
-
 class Initializer():
 
-    def __init__(self, db:Storage, schedule:AppointmentSchedule, quick:bool=False) -> None:
+    def __init__(self, db, schedule, quick:bool=False) -> None:
         self._db = db
         self._schedule = schedule
         self._quick = quick
 
     def initialize(self):
+        from .init_appointments import InitAppointments
+        from .init_doctors import InitDoctors
+        from .init_nurses import InitNurses
+        from .init_patients import InitPatients
+        from .init_receptionists import InitReceptionists
+        from console.progress_bar import ProgressBar
         init_steps = [
-            InitClinic(),
             InitDoctors(self._db),
             InitNurses(self._db),
             InitReceptionists(self._db),

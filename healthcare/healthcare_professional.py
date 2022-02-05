@@ -1,13 +1,10 @@
 from abc import abstractmethod, ABC
-
-from .employee_role import EmployeeRole
-
 from .employee import Employee
 
 class HealthcareProfessional(Employee, ABC):
     """base class for healthcare professionals"""
 
-    def __init__(self, name: str, employee_number: str, role:EmployeeRole):
+    def __init__(self, name: str, employee_number: str, role):
         super().__init__(name, employee_number)
         self._role = role
 
@@ -23,5 +20,5 @@ class HealthcareProfessional(Employee, ABC):
         pass
 
     @property
-    def role(self) -> EmployeeRole:
+    def role(self):
         return self._role

@@ -1,7 +1,4 @@
 import random
-
-from numpy import isin
-from .employee_role import EmployeeRole
 from .healthcare_professional import HealthcareProfessional
 
 class Doctor(HealthcareProfessional):
@@ -18,6 +15,7 @@ class Doctor(HealthcareProfessional):
         Returns:
             None
         """
+        from .employee_role import EmployeeRole
         super().__init__(name, employee_number, EmployeeRole.DOCTOR)
         from .storage import Storage
         self._storage = Storage.instance()

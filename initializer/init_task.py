@@ -1,17 +1,12 @@
 from abc import ABC, abstractmethod
 
-from healthcare.appointment_schedule import AppointmentSchedule
-from healthcare.storage import Storage
-from console.event import Event
-from console.event_listener import EventListener
-
 class InitTask(ABC):
     def __init__(self, sub_steps_count:int, description:str):
         self._sub_steps_count = sub_steps_count
         self._description = description
 
     @abstractmethod
-    def init(self, storage:Storage, schedule:AppointmentSchedule):
+    def init(self, storage, schedule):
         """Initialize the headthcare and update the progress bar
 
         Args:
@@ -21,7 +16,7 @@ class InitTask(ABC):
         """
         pass
 
-    def add_event_listener(self, event_listener:EventListener):
+    def add_event_listener(self, event_listener):
         self._event_listener = event_listener
 
     @property
@@ -33,4 +28,5 @@ class InitTask(ABC):
         return self._description
 
     def _notify(self, message:str):
+        from console.event import Event
         self._event_listener.notify(Event(message))

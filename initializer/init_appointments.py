@@ -1,14 +1,9 @@
 from datetime import datetime
 import random
-from healthcare.receptionist import Receptionist
-
-from healthcare.storage import Storage
-from healthcare.appointment_schedule import AppointmentSchedule
-
 from .init_task import InitTask
 
 class InitAppointments(InitTask):
-    def __init__(self, storage:Storage, schedule:AppointmentSchedule):
+    def __init__(self, storage, schedule):
         super().__init__(12, 'getting first appointments')
         self._storage = storage
         self._schedule = schedule
@@ -16,7 +11,7 @@ class InitAppointments(InitTask):
     def init(self):
         doctors = self._storage.select_doctors()
         patients = self._storage.select_patients()
-        receptionist:Receptionist = self._storage.select_receptionists()[0]
+        receptionist = self._storage.select_receptionists()[0]
         for i in range(0,11):
             patient = patients[random.randrange(0,len(patients))]
             doctor = doctors[random.randrange(0,len(doctors))]
