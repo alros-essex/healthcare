@@ -16,26 +16,26 @@ def run_test():
 
 if __name__ == "__main__":
     # TODO clean
-    run_test()
+    # run_test()
     parser = argparse.ArgumentParser(description='Manage a Clinic')
     # TODO fix defaults
-    # parser.add_argument('-r','--reset', action='store_false', help='starts with a clean database')
-    parser.add_argument('-r','--reset', action='store_true', help='starts with a clean database')
+    parser.add_argument('-k','--keep', action='store_true', help='keeps existing db, with no initialization')
+    # parser.add_argument('-r','--reset', action='store_true', help='starts with a clean database')
     # parser.add_argument('-i','--init', action='store_false', help='resets the database and starts with a preloaded clinic')
-    parser.add_argument('-i','--init', action='store_true', help='resets the database and starts with a preloaded clinic')
-    parser.add_argument('-q','--quick', action='store_false', help='speeds up loading time')
+    # parser.add_argument('-i','--init', action='store_true', help='resets the database and starts with a preloaded clinic')
+    # parser.add_argument('-q','--quick', action='store_false', help='speeds up animations')
     args = parser.parse_args()
 
-    if args.reset or args.init:
+    if not args.keep:
         Storage.reset()
         AppointmentSchedule.reset()
 
     db = Storage.instance()
     schedule = AppointmentSchedule.instance()
 
-    if args.init:
+    if not args.keep:
         print('initializing')
-        Initializer(db = db, schedule = schedule, quick = args.quick).initialize()
+        Initializer(db = db, schedule = schedule, quick = True).initialize()
 
-    console = Console(storage=db, schedule=schedule, quick=args.quick)
+    console = Console(storage=db, schedule=schedule, quick=True)
     console.loop()

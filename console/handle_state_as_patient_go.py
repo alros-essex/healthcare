@@ -131,7 +131,7 @@ class StateAsPatientGoHandler(StateHandler):
             if input == 'Y':
                 doctor:Doctor = appointment.staff
                 patient.request_repeat(doctor)
-                ConsoleUtility.print_conversation('{role}> Here\'s your repeat')
+                ConsoleUtility.print_conversation('Doctor> Here\'s your repeat')
                 self._pause()
                 ConsoleUtility.print_light('you> Thank you')
         ConsoleUtility.print_conversation('{}> Take care.'.format(appointment.staff.role.value))
