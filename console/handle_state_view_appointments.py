@@ -1,15 +1,11 @@
-from datetime import datetime, date
+from datetime import date
 import re
-from healthcare.appointment_schedule import AppointmentSchedule
-from healthcare.storage import Storage
-from console.state import State
-
-from .console_utility import ConsoleUtility
 from .handle_state import StateHandler
 
 class StateViewAppointmentsHandler(StateHandler):
     
-    def __init__(self, storage:Storage, schedule:AppointmentSchedule):
+    def __init__(self, storage, schedule):
+        from console.state import State
         self._storage = storage
         self._schedule = schedule
         self._next_state = {}
@@ -22,6 +18,7 @@ class StateViewAppointmentsHandler(StateHandler):
         return self._next_state[self._get_user_choice()]
 
     def _print_status(self):
+        from .console_utility import ConsoleUtility
         dates = self._schedule.find_dates_with_appointments()
         ConsoleUtility.print_light('Currently there are appointments in {} day{}'.format(len(dates),'s' if len(dates)>1 else ''))
         for date in dates:
@@ -33,10 +30,12 @@ class StateViewAppointmentsHandler(StateHandler):
             ConsoleUtility.print_light('- {}'.format(appointment_calendar))
 
     def _print_options(self):
+        from .console_utility import ConsoleUtility
         ConsoleUtility.print_option('[S]earch again')
         ConsoleUtility.print_option('[B]ack')
         
     def _get_user_choice(self):
+        from .console_utility import ConsoleUtility
         return ConsoleUtility.prompt_user_for_input(['S', 'B'])
 
     def _parse_date(self, input:str) -> date:

@@ -2,6 +2,8 @@ import random
 from .init_task import InitTask
 
 class InitPatients(InitTask):
+    """fill the database with random patients"""
+    
     def __init__(self, storage):
         super().__init__(11, 'registering patients')
         self._storage = storage

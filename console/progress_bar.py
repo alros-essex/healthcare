@@ -1,7 +1,5 @@
 from tqdm import tqdm
 import time
-
-from .event import Event
 from .event_listener import EventListener
 
 class ProgressBar(EventListener):
@@ -13,7 +11,7 @@ class ProgressBar(EventListener):
         self._pause_time = pause_time
         self._update_description(init_message)
 
-    def notify(self, event:Event):
+    def notify(self, event):
         self._tick(event.description)
     
     def _tick(self, message:str):

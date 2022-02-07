@@ -1,4 +1,5 @@
 class Initializer():
+    """Main class of the initialization utility"""
 
     def __init__(self, db, schedule, quick:bool=False) -> None:
         self._db = db
@@ -6,6 +7,7 @@ class Initializer():
         self._quick = quick
 
     def initialize(self):
+        """calls all init tasks"""
         from .init_appointments import InitAppointments
         from .init_doctors import InitDoctors
         from .init_nurses import InitNurses

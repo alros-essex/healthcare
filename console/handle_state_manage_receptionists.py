@@ -1,12 +1,10 @@
-from healthcare.storage import Storage
-from healthcare.receptionist import Receptionist
-from console.state import State
-
 from .handle_state_manage_staff import StateManageStaff
 
 class StateManageReceptionists(StateManageStaff):
 
-    def __init__(self, storage:Storage):
+    def __init__(self, storage):
+        from healthcare.receptionist import Receptionist
+        from console.state import State
         super().__init__(Receptionist, State.HIRE_A_RECEPTIONIST)
         self._storage = storage
 

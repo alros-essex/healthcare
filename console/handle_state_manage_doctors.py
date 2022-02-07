@@ -1,12 +1,10 @@
-from healthcare.storage import Storage
-from healthcare.doctor import Doctor
-from console.state import State
-
 from .handle_state_manage_staff import StateManageStaff
 
 class StateManageDoctors(StateManageStaff):
 
-    def __init__(self, storage:Storage):
+    def __init__(self, storage):
+        from healthcare.doctor import Doctor
+        from console.state import State
         super().__init__(Doctor, State.HIRE_A_DOCTOR)
         self._storage = storage
 

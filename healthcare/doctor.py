@@ -63,6 +63,7 @@ class Doctor(HealthcareProfessional):
         if len(candidates)==0:
             # patients already has all possible prescriptions!
             return None
+        # our doctors studied computer science and can only pick randoly
         prescription = Prescription(random.choice(candidates), patient, self, random.randint(1, 5), float(random.randint(100, 10000))/100)
         self._storage.insert_prescription(prescription)
         return prescription

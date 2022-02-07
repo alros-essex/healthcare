@@ -3,6 +3,7 @@ import random
 from .init_task import InitTask
 
 class InitAppointments(InitTask):
+    """creates some appointments in the schedule"""
     def __init__(self, storage, schedule):
         super().__init__(12, 'getting first appointments')
         self._storage = storage
@@ -13,6 +14,7 @@ class InitAppointments(InitTask):
         patients = self._storage.select_patients()
         receptionist = self._storage.select_receptionists()[0]
         for i in range(0,11):
+            # this is also a good end-to-end test
             patient = patients[random.randrange(0,len(patients))]
             doctor = doctors[random.randrange(0,len(doctors))]
             self._notify('booking appointment for {}'.format(patient))

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 
 class InitTask(ABC):
+    """base task for the initialization, to be extended by all the other tasks"""
+
     def __init__(self, sub_steps_count:int, description:str):
         self._sub_steps_count = sub_steps_count
         self._description = description
@@ -17,6 +19,7 @@ class InitTask(ABC):
         pass
 
     def add_event_listener(self, event_listener):
+        """to monitor the progress"""
         self._event_listener = event_listener
 
     @property

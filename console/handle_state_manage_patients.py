@@ -1,15 +1,11 @@
-from abc import ABC, abstractmethod
-from healthcare.storage import Storage
-from console.state import State
-
-from .console_utility import ConsoleUtility
 from .handle_state import StateHandler
 
 class StateManagePatients(StateHandler):
     
     _columns = 3
 
-    def __init__(self, storage:Storage):
+    def __init__(self, storage):
+        from console.state import State
         self._storage = storage
         self._next_state = {}
         self._next_state['B']=State.CONNECTED
@@ -20,6 +16,7 @@ class StateManagePatients(StateHandler):
         return self._next_state[self._get_user_choice()]
 
     def _print_status(self):
+        from .console_utility import ConsoleUtility
         ConsoleUtility.print_light('PATIENTS')
         doctors = self._storage.select_doctors()
         for i, doctor in enumerate(doctors):
@@ -29,6 +26,7 @@ class StateManagePatients(StateHandler):
                 ConsoleUtility.prompt_user_for_input()
         
     def _print_status_for_doctor(self, doctor):
+        from .console_utility import ConsoleUtility
         ConsoleUtility.print_option('=== Doctor {}\'s patiens ==='.format(doctor.name))
         patients = self._storage.select_patients(doctor)
         for index, patient in enumerate(patients, 1):
@@ -39,7 +37,9 @@ class StateManagePatients(StateHandler):
             print('\n')
 
     def _print_options(self):
+        from .console_utility import ConsoleUtility
         ConsoleUtility.print_option('[B]ack')
 
     def _get_user_choice(self):
+        from .console_utility import ConsoleUtility
         return ConsoleUtility.prompt_user_for_input(['B'])

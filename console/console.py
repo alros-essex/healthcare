@@ -1,10 +1,7 @@
-from colorama import Fore, Back, Style
+from colorama import Fore, Back
 from healthcare.appointment_schedule import AppointmentSchedule
-
 from healthcare.storage import Storage
-
-from console.state import State
-
+from .state import State
 from .handle_state_as_patient_go import StateAsPatientGoHandler
 from .handle_state_connected import StateConnectedHandler
 from .handle_state_hire_a_doctor import StateHireDoctor

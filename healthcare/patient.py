@@ -47,6 +47,7 @@ class Patient():
     def request_appointment(self, receptionist) -> None:
         my_doctor = self.doctor()
         if my_doctor is None:
+            # patient needs to register and asks a receptionist
             available_doctors = receptionist.find_available_doctors()
             my_doctor = random.choice(available_doctors)
             receptionist.register_patient(self, my_doctor)

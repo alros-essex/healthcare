@@ -19,7 +19,7 @@ if __name__ == "__main__":
     # run_test()
     parser = argparse.ArgumentParser(description='Manage a Clinic')
     # TODO fix defaults
-    parser.add_argument('-k','--keep', action='store_true', help='keeps existing db, with no initialization')
+    parser.add_argument('-k','--keep', action='store_false', help='keeps existing db, with no initialization')
     # parser.add_argument('-r','--reset', action='store_true', help='starts with a clean database')
     # parser.add_argument('-i','--init', action='store_false', help='resets the database and starts with a preloaded clinic')
     # parser.add_argument('-i','--init', action='store_true', help='resets the database and starts with a preloaded clinic')

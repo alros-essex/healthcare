@@ -1,23 +1,13 @@
 from datetime import datetime
-import enum
 import time
 import random
-from healthcare.appointment import Appointment
-from healthcare.appointment_schedule import AppointmentSchedule
-from healthcare.doctor import Doctor
-from healthcare.healthcare_professional import HealthcareProfessional
-
-from healthcare.storage import Storage
-from healthcare.patient import Patient
-from console.state import State
-from healthcare.receptionist import Receptionist
-
+from .state import State
 from .console_utility import ConsoleUtility
 from .handle_state import StateHandler
 
 class StateAsPatientGoHandler(StateHandler):
 
-    def __init__(self, storage:Storage, schedule:AppointmentSchedule, quick: bool = False):
+    def __init__(self, storage, schedule, quick: bool = False):
         self._quick=quick
         self._storage = storage
         self._schedule = schedule
@@ -31,16 +21,15 @@ class StateAsPatientGoHandler(StateHandler):
                 user, loop = self._talk_with_receptionist(receptionist, user)
         return State.CONNECTED
 
-    def _find_a_receptionist(self) -> Receptionist:
+    def _find_a_receptionist(self):
         """utility method to find the first receptionist available"""
         receptionists = self._storage.select_receptionists()
         if len(receptionists) == 0 or len(self._storage.select_doctors()) == 0:
-            ConsoleUtility.print_light('<it looks like nobody works here (Clinic must hire at least one receptionist and one doctor)>')
+            ConsoleUtility.print_error('<it looks like nobody works here (Clinic must hire at least one receptionist and one doctor)>')
             return None
-        receptionist:Receptionist = receptionists[random.randint(0, len(receptionists)-1)]
-        return receptionist
+        return receptionists[random.randint(0, len(receptionists)-1)]
 
-    def _talk_with_receptionist(self, receptionist:Receptionist, patient:Patient): 
+    def _talk_with_receptionist(self, receptionist, patient): 
         """workflow with the receptionist"""
         if patient is None:
             patient = self._front_desk_identity_user(receptionist)
@@ -65,7 +54,7 @@ class StateAsPatientGoHandler(StateHandler):
         else:
             return patient, False
     
-    def _front_desk_identity_user(self, receptionist:Receptionist) -> Patient:
+    def _front_desk_identity_user(self, receptionist):
         ConsoleUtility.print_conversation('Receptionist> Hello! Can I help you?')
         self._pause()
         ConsoleUtility.print_light('you> Hi, yes.')
@@ -79,14 +68,14 @@ class StateAsPatientGoHandler(StateHandler):
             patient = self._register_new_patient(receptionist, name = name)
         return patient
 
-    def _print_appointments(self, receptionist:Receptionist, patient:Patient):
+    def _print_appointments(self, receptionist, patient):
         appointments = receptionist.find_patient_appointments(patient)
         ConsoleUtility.print_conversation('Receptionist> Currently, you have {} appointment{}'.format(len(appointments),'s' if len(appointments)>1 else ''))
         for idx, appointment in enumerate(appointments):
             ConsoleUtility.print_light('{} with {}'.format(idx+1, appointment.date, appointment.staff))
         return appointments
 
-    def _make_an_appointment(self, receptionist:Receptionist, patient:Patient):
+    def _make_an_appointment(self, receptionist, patient):
         ConsoleUtility.print_conversation('Receptionist> With whom do you need an appointment?')
         index = 1
         doctor = patient.doctor()
@@ -114,7 +103,7 @@ class StateAsPatientGoHandler(StateHandler):
         receptionist.register_appointment(possible_appointment)
         ConsoleUtility.print_conversation('Receptionist> Thank you, the appointment has been registered')
 
-    def _see_staff(self, receptionist:Receptionist, patient:Patient, appointment:Appointment):
+    def _see_staff(self, receptionist, patient, appointment):
         from healthcare.doctor import Doctor
         ConsoleUtility.print_conversation('{role}> Hi, I am {role} {name}'.format(
             role = appointment.staff.role.value, name = appointment.staff.name))
@@ -139,10 +128,10 @@ class StateAsPatientGoHandler(StateHandler):
         ConsoleUtility.print_light('you> Bye')
         receptionist.cancel_appointment(appointment)
 
-    def _can_issue_prescription(self, staff:HealthcareProfessional) -> bool:
+    def _can_issue_prescription(self, staff) -> bool:
         return hasattr(staff, 'issue_prescription') and callable(getattr(staff, 'issue_prescription'))
 
-    def _register_new_patient(self, receptionist:Receptionist, name):
+    def _register_new_patient(self, receptionist, name):
         patient = self._identify_user(name)
         doctor = self._choose_a_doctor(receptionist)
         receptionist.register_patient(patient, doctor)
@@ -157,13 +146,14 @@ class StateAsPatientGoHandler(StateHandler):
             return default
 
     def _identify_user(self, name):
+        from healthcare.patient import Patient
         ConsoleUtility.print_conversation('Receptionist> What is your address?')
         address = ConsoleUtility.prompt_user_for_input()
         ConsoleUtility.print_conversation('Receptionist> What is your phone number?')
         phone = ConsoleUtility.prompt_user_for_input()
         return Patient(name, address, phone)
 
-    def _choose_a_doctor(self, receptionist:Receptionist):
+    def _choose_a_doctor(self, receptionist):
         doctors = receptionist.find_available_doctors()
         ConsoleUtility.print_conversation('Receptionist> You should choose a doctor')
         options = []
@@ -174,7 +164,7 @@ class StateAsPatientGoHandler(StateHandler):
         doctor = options[int(ConsoleUtility.prompt_user_for_input(validation = lambda i: int(i)>0 and int(i)<=index)) - 1]
         return doctor
 
-    def _cancel_an_appointment(self, receptionist:Receptionist, patient:Patient):
+    def _cancel_an_appointment(self, receptionist, patient):
         appointments = self._print_appointments(receptionist, patient)
         ConsoleUtility.print_conversation('Receptionist> Which one do you want to cancel?')
         input = ConsoleUtility.prompt_user_for_input(options = [str(o) for o in range(1, len(appointments)+1)])
@@ -182,7 +172,7 @@ class StateAsPatientGoHandler(StateHandler):
         receptionist.cancel_appointment(appointment)
         ConsoleUtility.print_conversation('Receptionist> The appointment {} has been cancelled'.format(appointment))
 
-    def _find_next_appointment(self, receptionist:Receptionist, patient:Patient):
+    def _find_next_appointment(self, receptionist, patient):
         receptionist.find_patient_appointments(patient)
 
     def _pause(self):

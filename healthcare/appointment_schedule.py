@@ -9,6 +9,7 @@ class AppointmentSchedule():
 
     @classmethod
     def instance(cls):
+        """returns a singleton across the whole application"""
         if cls._instance is None:
             from .storage import Storage
             cls._instance = AppointmentSchedule(Storage.instance())
@@ -16,7 +17,7 @@ class AppointmentSchedule():
 
     @classmethod
     def reset(cls):
-        """to be called when storage is reset"""
+        """to be called when storage is reset, useful for testing"""
         cls._instance = None
 
     from .storage import Storage
@@ -81,8 +82,7 @@ class AppointmentSchedule():
         starting = self._round_initial_time(initial)
         appointments = self._appointments_as_dict(self.find_appointments(filter_professional=professional))
         slot = self._find_next_slot(appointments, urgent, starting)
-        return Appointment(type = AppointmentType.URGENT if urgent else AppointmentType.NORMAL,
-            staff = professional, patient = patient, date = slot)
+        return Appointment(type = AppointmentType.URGENT if urgent else AppointmentType.NORMAL, staff = professional, patient = patient, date = slot)
 
     def _round_initial_time(self, initial:datetime) -> datetime:
         """rounds the datetime to xx:00 or xx:30
@@ -93,8 +93,10 @@ class AppointmentSchedule():
             rounded datetime
         """
         if initial.minute != 0 and initial.minute != 30:
+            # to be rounded
             return datetime(initial.year, initial.month, initial.day, initial.hour + (0 if initial.minute<=30 else 1), 30 if initial.minute<=30 else 0)
         else:
+            # already rounded
             return initial
 
     def _appointments_as_dict(self, appointments):
@@ -207,7 +209,10 @@ class AppointmentSchedule():
         Returns:
             Appointment: dict of professional -> (dict of date -> appoitment)
         """
-        employee_numbers_to_consider = [p.employee_number for p in self._merge_professional_filters(filter_professional, filter_professionals)] if filter_professional is not None or len(filter_professionals)>0 else []
+        if filter_professional is not None or len(filter_professionals)>0:
+            employee_numbers_to_consider = [p.employee_number for p in self._merge_professional_filters(filter_professional, filter_professionals)]
+        else:
+            employee_numbers_to_consider = []
         return self._storage.select_appointments(filter_patient=filter_patient, filter_employee_numbers=employee_numbers_to_consider, filter_date = filter_date)
 
     def find_dates_with_appointments(self):

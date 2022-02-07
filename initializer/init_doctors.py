@@ -2,6 +2,8 @@ from healthcare.doctor import Doctor
 from .init_hiring_staff import InitHiringStaff
 
 class InitDoctors(InitHiringStaff):
+    """template class for Init Hiring Staff"""
+
     def _get_type_of_staff(self):
         return 'doctors'
 

@@ -1,6 +1,8 @@
 from .init_hiring_staff import InitHiringStaff
 
 class InitReceptionists(InitHiringStaff):
+    """template class for Init Hiring Staff"""
+    
     def _get_type_of_staff(self):
         return 'receptionists'
 
