@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from console.event import Event
 
 class EventListener(ABC):
     
     @abstractmethod
-    def notify(self, event:Event):
+    def notify(self, event):
         pass
