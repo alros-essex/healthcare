@@ -2,8 +2,6 @@
 
 End module assignment for *Object-oriented Information Systems November 2021*
 
-![design](design.png "design")
-
 ## how to use it
 
 setup with
@@ -23,3 +21,15 @@ start it with
 ```
 python3 main.py
 ```
+
+## Design
+
+original design
+
+![design](design.png "design")
+
+actual design
+
+![design](solution-class.png "class")
+
+![design](solution-db-design.png  "db")
