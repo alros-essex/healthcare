@@ -26,9 +26,8 @@ class TestEndToEnd(unittest.TestCase):
             storage.insert_employee(employee)
 
         # the clinic just opened and patients came to register
-        surnames = ['Smith', 'Jones', 'Taylor', 'Brown', 'Williams', 'Wilson', 'Johnson', 'Davies', 'Patel', 'Robinson']
-        firstnames = ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Charles', 'Joseph', 'Thomas', 
-                 'Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth', 'Jennifer', 'Maria', 'Susan', 'Margaret', 'Dorothy']
+        surnames = ['Smith', 'Jones', 'Taylor', 'Brown', 'Williams']
+        firstnames = ['James', 'John', 'Robert', 'Michael', 'William', 'Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth']
         street_names = ['Main St', '2nd St', '3rd St', '1st St', 'Oak St', '4th St', 'Elm St', 'Pine St', 'Church St', 'Maple St']
 
         # find the staff from db
