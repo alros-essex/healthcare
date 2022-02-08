@@ -120,7 +120,7 @@ class TestStorage(unittest.TestCase):
     def test_delete_appointment(self):
         from healthcare.doctor import Doctor
         from healthcare.patient import Patient
-        from healthcare.appointment import AppointmentType
+        from healthcare.appointment_type import AppointmentType
         from healthcare.appointment import Appointment
         storage = self._get_storage()
         doctor = Doctor('','DR1234')
