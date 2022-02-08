@@ -1,3 +1,4 @@
+from datetime import timedelta
 import unittest
 
 from healthcare.appointment_schedule import AppointmentSchedule
@@ -51,6 +52,30 @@ class TestAppointmentSchedule(unittest.TestCase):
         appointment = schedule.find_next_available(doctor, patient, False, datetime(2022, 1, 21, 15, 31))
         self.assertEqual(datetime(2022, 1, 24, 9, 0), appointment.date)
 
+    def test_find_next_appointment(self):
+        from datetime import datetime
+        from healthcare.doctor import Doctor
+        from healthcare.patient import Patient
+        storage = self._mock_storage()
+        schedule = AppointmentSchedule(storage)
+        doctor = Doctor('','')
+        patient = Patient('','','')
+        appointments = []
+        storage.set_return_select_appointments(appointments)
+        expected_datetime = datetime(2022, 1, 19, 8, 0)
+
+        # check how appointments are scheduled during a single day
+        for i in range(0, 14):
+            appointment = schedule.find_next_available(doctor, patient, True, datetime(2022, 1, 19, 5, 15))
+            self.assertEqual(expected_datetime, appointment.date)
+            appointments.append(appointment)
+            expected_datetime = expected_datetime + timedelta(minutes=30)
+
+        # until the overflow to next day
+        appointment = schedule.find_next_available(doctor, patient, True, datetime(2022, 1, 19, 5, 15))
+        self.assertEqual(datetime(2022, 1, 20, 8, 0), appointment.date)
+        appointments.append(appointment)
+
     def test_find_appointments(self):
         from datetime import date, datetime
         from healthcare.doctor import Doctor
@@ -79,6 +104,8 @@ class TestAppointmentSchedule(unittest.TestCase):
         from healthcare.appointment import Appointment
         from healthcare.storage import Storage
         class MockStorage():
+            def __init__(self) -> None:
+                self._return_select_appointments = appointments
             def select_appointments(self, filter_employee_numbers=[], filter_date=None, filter_patient=None):
                 return [Appointment(None, None, None, None)]
             def insert_appointment(self, appointment):
@@ -91,9 +118,11 @@ class TestAppointmentSchedule(unittest.TestCase):
                     'filter_date': filter_date,
                     'filter_patient': filter_patient
                 }
-                return appointments
+                return self._return_select_appointments
             def select_appointment_dates(self):
                 self._called_select_appointment_dates = True
+            def set_return_select_appointments(self, appointments):
+                self._return_select_appointments = appointments
         Storage._instance = MockStorage()
         return Storage._instance
 
