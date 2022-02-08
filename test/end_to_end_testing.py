@@ -1,6 +1,8 @@
 import random
 import unittest
 
+from healthcare.appointment import Appointment
+
 class TestEndToEnd(unittest.TestCase):
 
     def test_register_patients(self):
@@ -26,9 +28,8 @@ class TestEndToEnd(unittest.TestCase):
             storage.insert_employee(employee)
 
         # the clinic just opened and patients came to register
-        surnames = ['Smith', 'Jones', 'Taylor', 'Brown', 'Williams', 'Wilson', 'Johnson', 'Davies', 'Patel', 'Robinson']
-        firstnames = ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Charles', 'Joseph', 'Thomas', 
-                 'Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth', 'Jennifer', 'Maria', 'Susan', 'Margaret', 'Dorothy']
+        surnames = ['Smith', 'Jones', 'Taylor', 'Brown', 'Williams']
+        firstnames = ['James', 'John', 'Robert', 'Michael', 'William', 'Mary', 'Patricia', 'Linda', 'Barbara', 'Elizabeth']
         street_names = ['Main St', '2nd St', '3rd St', '1st St', 'Oak St', '4th St', 'Elm St', 'Pine St', 'Church St', 'Maple St']
 
         # find the staff from db
@@ -54,13 +55,13 @@ class TestEndToEnd(unittest.TestCase):
             self.assertIsNotNone(storage.select_doctor_for_patient(patient))
 
         # patients call to get an appointment
-        for i in range(1, 200):
+        for i in range(1, 50):
             patient:Patient = random.choice(patients)
             initial_sc = len(schedule.find_appointments(filter_patient=patient))
             initial_db = len(storage.select_appointments(filter_patient=patient))
             patient.request_appointment(phone_receptionist)
-            self.assertEquals(initial_db + 1, len(storage.select_appointments(filter_patient=patient)))
-            self.assertEquals(initial_sc + 1, len(schedule.find_appointments(filter_patient=patient)))
+            self.assertEqual(initial_db + 1, len(storage.select_appointments(filter_patient=patient)))
+            self.assertEqual(initial_sc + 1, len(schedule.find_appointments(filter_patient=patient)))
         
         # patients come for the consultation
         for a in storage.select_appointments():
@@ -80,3 +81,10 @@ class TestEndToEnd(unittest.TestCase):
         storage = Storage.instance()
         schedule = AppointmentSchedule.instance()
         return storage, schedule
+
+    @classmethod
+    def tearDownClass(cls):
+        from healthcare.storage import Storage
+        from healthcare.appointment_schedule import AppointmentSchedule
+        Storage.reset()
+        AppointmentSchedule.reset()

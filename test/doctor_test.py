@@ -12,7 +12,7 @@ class TestDoctor(unittest.TestCase):
         for i in range(0, len(Doctor._type)):
             self.assertIsNotNone(doc.issue_prescription(ptn))
         # verify that storage was called
-        self.assertEquals(len(Doctor._type), mock.called_insert_prescription)
+        self.assertEqual(len(Doctor._type), mock.called_insert_prescription)
     
     def test_dont_issue_same_prescription_twice(self):
         from healthcare.doctor import Doctor
@@ -49,7 +49,7 @@ class TestDoctor(unittest.TestCase):
         mock = self._mock_storage()
         doc = Doctor('','')
         # check against mock
-        self.assertEquals(1, len(doc.patients()))
+        self.assertEqual(1, len(doc.patients()))
         self.assertTrue(mock.called_select_patients)
 
     def _mock_storage(self, prescriptions=[]):
@@ -70,3 +70,8 @@ class TestDoctor(unittest.TestCase):
                 return [Prescription(t,None,None,0,0) for t in prescriptions]
         Storage._instance = MockStorage()
         return Storage._instance
+
+    @classmethod
+    def tearDownClass(cls):
+        from healthcare.storage import Storage
+        Storage.reset()

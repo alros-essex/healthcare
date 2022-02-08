@@ -31,5 +31,5 @@ class InitTask(ABC):
         return self._description
 
     def _notify(self, message:str):
-        from console.event import Event
+        from .event import Event
         self._event_listener.notify(Event(message))

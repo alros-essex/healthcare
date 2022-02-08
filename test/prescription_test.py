@@ -7,8 +7,7 @@ class TestPrescription(unittest.TestCase):
         from healthcare.doctor import Doctor
         from healthcare.prescription import Prescription
         from healthcare.patient import Patient
-        from healthcare.storage import Storage
-        storage = Storage()
+        storage = self._get_storage()
         patient1 = Patient('John', '', '')
         patient2 = Patient('Jane', '', '')
         doctor = Doctor('Who', 'DR1234')
@@ -18,6 +17,16 @@ class TestPrescription(unittest.TestCase):
         storage.insert_prescription(Prescription('CCC', patient2, doctor, 20, 22.22))
 
         prescriptions = storage.select_prescriptions(patient1)
-        self.assertEquals(2, len(prescriptions))
+        self.assertEqual(2, len(prescriptions))
         prescription:Prescription = prescriptions[0]
-        self.assertEquals(11.11, prescription.dosage)
+        self.assertEqual(11.11, prescription.dosage)
+
+    def _get_storage(self):
+        from healthcare.storage import Storage
+        Storage.reset()
+        return Storage.instance()
+
+    @classmethod
+    def tearDownClass(cls):
+        from healthcare.storage import Storage
+        Storage.reset()

@@ -19,8 +19,8 @@ class Storage():
     @classmethod
     def reset(cls):
         if exists(Storage._path_to_database):
-            cls._instance = None
             os.remove(Storage._path_to_database)
+        cls._instance = None
 
     def __init__(self):
         """creates the instance
