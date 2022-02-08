@@ -91,4 +91,7 @@ class TestReceptionist(unittest.TestCase):
         AppointmentSchedule._instance = MockAppointmentSchedule()
         return AppointmentSchedule._instance
 
-    
+    @classmethod
+    def tearDownClass(cls):
+        from healthcare.appointment_schedule import AppointmentSchedule
+        AppointmentSchedule.reset()

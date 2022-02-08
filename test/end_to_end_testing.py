@@ -1,6 +1,8 @@
 import random
 import unittest
 
+from healthcare.appointment import Appointment
+
 class TestEndToEnd(unittest.TestCase):
 
     def test_register_patients(self):
@@ -79,3 +81,10 @@ class TestEndToEnd(unittest.TestCase):
         storage = Storage.instance()
         schedule = AppointmentSchedule.instance()
         return storage, schedule
+
+    @classmethod
+    def tearDownClass(cls):
+        from healthcare.storage import Storage
+        from healthcare.appointment_schedule import AppointmentSchedule
+        Storage.reset()
+        AppointmentSchedule.reset()
