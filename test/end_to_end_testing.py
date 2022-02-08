@@ -54,7 +54,7 @@ class TestEndToEnd(unittest.TestCase):
             self.assertIsNotNone(storage.select_doctor_for_patient(patient))
 
         # patients call to get an appointment
-        for i in range(1, 200):
+        for i in range(1, 50):
             patient:Patient = random.choice(patients)
             initial_sc = len(schedule.find_appointments(filter_patient=patient))
             initial_db = len(storage.select_appointments(filter_patient=patient))
