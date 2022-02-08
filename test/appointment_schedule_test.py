@@ -77,7 +77,6 @@ class TestAppointmentSchedule(unittest.TestCase):
 
     def _mock_storage(self, appointments = []):
         from healthcare.appointment import Appointment
-        from healthcare.patient import Patient
         from healthcare.storage import Storage
         class MockStorage():
             def select_appointments(self, filter_employee_numbers=[], filter_date=None, filter_patient=None):
@@ -97,3 +96,8 @@ class TestAppointmentSchedule(unittest.TestCase):
                 self._called_select_appointment_dates = True
         Storage._instance = MockStorage()
         return Storage._instance
+
+    @classmethod
+    def tearDownClass(cls):
+        from healthcare.storage import Storage
+        Storage.reset()

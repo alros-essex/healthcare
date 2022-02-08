@@ -70,3 +70,8 @@ class TestDoctor(unittest.TestCase):
                 return [Prescription(t,None,None,0,0) for t in prescriptions]
         Storage._instance = MockStorage()
         return Storage._instance
+
+    @classmethod
+    def tearDownClass(cls):
+        from healthcare.storage import Storage
+        Storage.reset()
