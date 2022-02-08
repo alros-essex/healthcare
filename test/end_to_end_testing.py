@@ -59,8 +59,8 @@ class TestEndToEnd(unittest.TestCase):
             initial_sc = len(schedule.find_appointments(filter_patient=patient))
             initial_db = len(storage.select_appointments(filter_patient=patient))
             patient.request_appointment(phone_receptionist)
-            self.assertEquals(initial_db + 1, len(storage.select_appointments(filter_patient=patient)))
-            self.assertEquals(initial_sc + 1, len(schedule.find_appointments(filter_patient=patient)))
+            self.assertEqual(initial_db + 1, len(storage.select_appointments(filter_patient=patient)))
+            self.assertEqual(initial_sc + 1, len(schedule.find_appointments(filter_patient=patient)))
         
         # patients come for the consultation
         for a in storage.select_appointments():
