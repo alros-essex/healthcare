@@ -13,7 +13,7 @@ class Initializer():
         from .init_nurses import InitNurses
         from .init_patients import InitPatients
         from .init_receptionists import InitReceptionists
-        from console.progress_bar import ProgressBar
+        from .progress_bar import ProgressBar
         init_steps = [
             InitDoctors(self._db),
             InitNurses(self._db),
