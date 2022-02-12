@@ -53,6 +53,8 @@ class TestDoctor(unittest.TestCase):
         self.assertTrue(mock.called_select_patients)
 
     def _mock_storage(self, prescriptions=[]):
+        """utility that creates a mock of the Storage with predefined replies 
+        to unit-test the class without the complexity of the db"""
         from healthcare.storage import Storage
         from healthcare.prescription import Prescription
         class MockStorage():

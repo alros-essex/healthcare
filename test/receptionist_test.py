@@ -59,6 +59,8 @@ class TestReceptionist(unittest.TestCase):
         self.assertEqual(1, len(receptionist.find_patient_appointments(Patient('','',''))))
 
     def _mock_storage(self):
+        """utility that creates a mock of the Storage with predefined replies 
+        to unit-test the class without the complexity of the db"""
         from healthcare.doctor import Doctor
         from healthcare.patient import Patient
         from healthcare.storage import Storage
@@ -75,6 +77,8 @@ class TestReceptionist(unittest.TestCase):
         return Storage._instance
 
     def _mock_schedule(self):
+        """utility that creates a mock of the AppointmentSchedule with predefined replies 
+        to unit-test the class without the complexity of the schedule"""
         from healthcare.appointment_schedule import AppointmentSchedule
         from healthcare.appointment import Appointment
         class MockAppointmentSchedule():

@@ -7,6 +7,7 @@ class TestAppointmentSchedule(unittest.TestCase):
 
     def test_appointments(self):
         from healthcare.appointment import Appointment
+        # one appointment in the mock = return 1 result
         storage = self._mock_storage([Appointment(None, None, None, None)])
         schedule = AppointmentSchedule(storage)
         # test with mock
@@ -14,6 +15,7 @@ class TestAppointmentSchedule(unittest.TestCase):
 
     def test_add_appoitment(self):
         from healthcare.appointment import Appointment
+        # vefity that storage is called
         storage = self._mock_storage()
         schedule = AppointmentSchedule(storage)
         # test with mock
@@ -22,6 +24,7 @@ class TestAppointmentSchedule(unittest.TestCase):
 
     def test_cancel_appoitment(self):
         from healthcare.appointment import Appointment
+        # vefity that storage is called
         storage = self._mock_storage()
         schedule = AppointmentSchedule(storage)
         # test with mock
@@ -101,6 +104,8 @@ class TestAppointmentSchedule(unittest.TestCase):
         self.assertTrue(storage._called_select_appointment_dates)
 
     def _mock_storage(self, appointments = []):
+        """utility that creates a mock of the Storage with predefined replies 
+        to unit-test the class without the complexity of the db"""
         from healthcare.appointment import Appointment
         from healthcare.storage import Storage
         class MockStorage():

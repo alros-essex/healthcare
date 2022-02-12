@@ -47,6 +47,8 @@ class TestPatient(unittest.TestCase):
         self.assertTrue(receptionist._called_register_appointment)
 
     def _mock_storage(self, patients_doctor=None, prescriptions=[]):
+        """utility that creates a mock of the Storage with predefined replies 
+        to unit-test the class without the complexity of the db"""
         from healthcare.storage import Storage
         class MockStorage():
 
@@ -61,6 +63,8 @@ class TestPatient(unittest.TestCase):
         return Storage._instance
 
     def _mock_doctor(self):
+        """utility that creates a mock of the Doctor with predefined replies 
+        to unit-test the class without the complexity of the doctor"""
         class MockDoctor():
             def approve_repeat(self, prescription):
                 self.called_approve_repeat = True
@@ -68,6 +72,8 @@ class TestPatient(unittest.TestCase):
         return MockDoctor()
 
     def _mock_receptionist(self):
+        """utility that creates a mock of the Receptionist with predefined replies 
+        to unit-test the class without the complexity of the receptionist"""
         class MockReceptionist():
             def propose_appointment(self, professional, patient, urgent, initial):
                 from healthcare.appointment import Appointment

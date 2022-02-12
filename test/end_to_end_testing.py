@@ -1,9 +1,8 @@
 import random
 import unittest
 
-from healthcare.appointment import Appointment
-
 class TestEndToEnd(unittest.TestCase):
+    """this is an integration test to test the interaction between components"""
 
     def test_register_patients(self):
         from healthcare.appointment import Appointment

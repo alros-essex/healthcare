@@ -3,6 +3,7 @@ import time
 from .event_listener import EventListener
 
 class ProgressBar(EventListener):
+    """an animated widget"""
 
     def __init__(self, steps:int, init_message:str, row:int, padding:int=50, pause_time:float=0.3):
         self._bar = tqdm(range(0, steps), position=row)
@@ -12,6 +13,7 @@ class ProgressBar(EventListener):
         self._update_description(init_message)
 
     def notify(self, event):
+        """signal that the bar should progress"""
         self._tick(event.description)
     
     def _tick(self, message:str):
